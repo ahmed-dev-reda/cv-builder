@@ -60,37 +60,71 @@ export default function Templates() {
           </div>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {templates.map((template: Template, index) => (
             <motion.div
               key={template.name}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{
+                opacity: 0,
+                y: 50,
+                scale: 0.96,
+                filter: "blur(6px)",
+              }}
               whileInView={{
                 opacity: 1,
                 y: 0,
+                scale: 1,
+                filter: "blur(0px)",
               }}
               transition={{
-                duration: 0.6,
-                delay: index * 0.12,
-                ease: "easeIn",
+                duration: 0.7,
+                delay: index * 0.1,
+                ease: [0.22, 1, 0.36, 1],
               }}
               viewport={{
                 once: true,
-                amount: 0.15,
+                amount: 0.2,
               }}
-              className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5"
+              whileHover={{
+                y: -6,
+                transition: {
+                  duration: 0.25,
+                  ease: "easeOut",
+                },
+              }}
+              className="
+      group overflow-hidden rounded-2xl
+      border border-gray-200
+      bg-white
+      shadow-sm
+      transition-shadow duration-300
+      hover:shadow-md
+    "
             >
-              <motion.div className="aspect-5 bg-[#EEF3FC] p-4">
-                <Image
-                  src={template.image}
-                  alt={`${template.name} template`}
-                  width={500}
-                  height={625}
-                  className="h-full w-full object-contain"
-                />
+              {/* Preview */}
+              <motion.div className="aspect-5 overflow-hidden bg-[#EEF3FC] p-4">
+                <motion.div
+                  className="h-full w-full"
+                  whileHover={{
+                    scale: 1.03,
+                  }}
+                  transition={{
+                    duration: 0.4,
+                    ease: "easeOut",
+                  }}
+                >
+                  <Image
+                    src={template.image}
+                    alt={`${template.name} template`}
+                    width={500}
+                    height={625}
+                    className="h-full w-full object-contain"
+                  />
+                </motion.div>
               </motion.div>
 
-              <div className="flex items-center justify-between p-5">
+              {/* Info */}
+              <div className="flex max-lg:flex-col items-center justify-between p-5 ">
                 <div>
                   <h3 className="font-semibold capitalize">
                     {template.name} Template
@@ -99,7 +133,17 @@ export default function Templates() {
 
                 <Link
                   href="/builder"
-                  className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-[#0D47A1] transition hover:bg-[#0D47A1] hover:text-white"
+                  className="
+          rounded-lg
+          bg-blue-50
+          px-3 py-2
+          text-xs font-semibold
+          text-[#0D47A1]
+          transition-all duration-300
+          hover:bg-[#0D47A1]
+          hover:text-white
+          hover:shadow-md 
+        "
                   onClick={() => dispatch(setTemplate(template.name))}
                 >
                   Use template
