@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { FaFileDownload } from "react-icons/fa";
 
@@ -17,6 +17,7 @@ import { TemplateType } from "@/lib/features/resumeSlice";
 import { motion } from "motion/react";
 import ClassicTwo from "@/templates/ClassicTwo";
 import MinimalistTwo from "@/templates/MinimalistTwo";
+import DownloadSuccess from "@/components/builder/DownloadSuccess";
 
 // Builder page — form editor, live preview, and PDF export
 export default function Builder() {
@@ -42,7 +43,7 @@ export default function Builder() {
   // Handlers
 
   // Capture preview as PNG, embed full-page in A4 PDF, trigger download
-
+  const [downloaded, setDownloaded] = useState(false);
   const handleDownloadPDF = async () => {
     const element = ref.current;
 
@@ -120,6 +121,7 @@ export default function Builder() {
       link.remove();
 
       URL.revokeObjectURL(url);
+      setDownloaded(true);
     } catch (error) {
       console.error("PDF generation failed:", error);
     }
@@ -157,7 +159,7 @@ export default function Builder() {
       </motion.section>
 
       {/* Preview */}
-
+      <DownloadSuccess open={downloaded} onClose={() => setDownloaded(false)} />
       {/* A4-sized canvas; ref here is the PDF capture target */}
 
       <section className="h-full flex-3 overflow-auto bg-[#E5EEFF] py-4 xl:p-0">
