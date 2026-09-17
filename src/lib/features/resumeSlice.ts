@@ -23,6 +23,7 @@ export interface Experience {
 export type ResumeState = {
   color: string;
 
+  sectionsTitle: SectionName[];
   personalInfo: {
     fullName: string;
     job?: string;
@@ -40,11 +41,9 @@ export type ResumeState = {
 
   skills: Single[];
 
-  languages: Single[];
-
-  certifications: Single[];
   template: TemplateType;
   moreSections: NewSection[];
+  font: string;
 };
 
 export type Single = {
@@ -68,7 +67,17 @@ type Body = {
   type: "ADD" | "DELETE";
 };
 
-export type TemplateType = "simple" | "minimalist" | "classicOne";
+export type SectionName = {
+  id: number;
+  name: string;
+};
+
+export type TemplateType =
+  | "simple"
+  | "minimalist"
+  | "classicOne"
+  | "classicTwo"
+  | "minimalistTwo";
 // --- Initial state ---
 
 const initialState: ResumeState = {
@@ -87,14 +96,16 @@ const initialState: ResumeState = {
   experience: [],
 
   education: [],
-
   skills: [],
-
-  languages: [],
-
-  certifications: [],
   template: "simple",
   moreSections: [],
+  sectionsTitle: [
+    { id: 1, name: "Professional Summary" },
+    { id: 2, name: "Work Experience" },
+    { id: 3, name: "Educations" },
+    { id: 4, name: "Skills" },
+  ],
+  font: "inter",
 };
 
 const resumeSlice = createSlice({
@@ -226,12 +237,6 @@ const resumeSlice = createSlice({
     setSkills: (state, action: PayloadAction<Single>) => {
       state.skills.push(action.payload);
     },
-    setLanguages: (state, action: PayloadAction<Single>) => {
-      state.languages.push(action.payload);
-    },
-    setCertifications: (state, action: PayloadAction<Single>) => {
-      state.certifications.push(action.payload);
-    },
 
     updateSummary: (state, action: PayloadAction<string>) => {
       state.summary = action.payload;
@@ -282,16 +287,7 @@ const resumeSlice = createSlice({
         (skill) => skill.id !== action.payload,
       );
     },
-    removeLanguage: (state, action: PayloadAction<string>) => {
-      state.languages = state.languages.filter(
-        (lang) => lang.id !== action.payload,
-      );
-    },
-    removeCertificate: (state, action: PayloadAction<string>) => {
-      state.certifications = state.certifications.filter(
-        (cert) => cert.id !== action.payload,
-      );
-    },
+
     addMoreSection: (state, action: PayloadAction<NewSection>) => {
       state.moreSections.push(action.payload);
     },
@@ -330,6 +326,16 @@ const resumeSlice = createSlice({
         section.body = section.body.filter((item) => item.id !== body.id);
       }
     },
+    updateSectionName: (state, action: PayloadAction<SectionName>) => {
+      const { id, name } = action.payload;
+      state.sectionsTitle = state.sectionsTitle.map((title) => {
+        if (title.id === id) title.name = name;
+        return title;
+      });
+    },
+    setFont: (state, action: PayloadAction<string>) => {
+      state.font = action.payload;
+    },
   },
 });
 
@@ -339,16 +345,12 @@ export const {
   addExperience,
   addExperiencePoint,
   addMoreSection,
-  removeCertificate,
   removeEducation,
   removeEducationPoint,
   removeExperience,
   removeExperiencePoint,
-  removeLanguage,
   removeSkill,
-  setCertifications,
   setColor,
-  setLanguages,
   setResume,
   setSkills,
   setTemplate,
@@ -360,6 +362,8 @@ export const {
   updateSection,
   updateSectionBody,
   updateSummary,
+  updateSectionName,
+  setFont,
 } = resumeSlice.actions;
 
 export default resumeSlice.reducer;

@@ -5,8 +5,3 @@ html {
 body {
   font-family: var(--font-open-sans);
 }
-
-
-.classic {
-  font-family: "Times New Roman", Times, serif;
-}

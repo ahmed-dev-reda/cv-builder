@@ -15,6 +15,12 @@ import Education from "../CVForm/Education";
 import MoreSections from "../CVForm/MoreSections";
 import Skills from "../CVForm/SkillsField";
 
+// Icons
+import { AiOutlineAlignLeft } from "react-icons/ai";
+import { LuBriefcaseBusiness } from "react-icons/lu";
+import { SlGraduation } from "react-icons/sl";
+import { LuBrain } from "react-icons/lu";
+import SectionTitle from "../CVForm/reusable/SectionTitle";
 // Resume data entry form — dispatches Redux updates and persists to localStorage
 export default function CVForm() {
   const state = useSelector((state: RootState) => state.resume);
@@ -24,11 +30,11 @@ export default function CVForm() {
   const {
     education,
     experience,
-    languages,
     personalInfo,
     skills,
     summary,
     color,
+    sectionsTitle,
   } = state;
 
   // Constants
@@ -81,17 +87,12 @@ export default function CVForm() {
         newProgress += 10;
       }
 
-      if (languages.length > 0) {
-        newProgress += 10;
-      }
-
       setProgress(newProgress);
     }
     trackingProgress();
   }, [
     education.length,
     experience.length,
-    languages.length,
     personalInfo.address.length,
     personalInfo.email.length,
     personalInfo.fullName.length,
@@ -100,6 +101,7 @@ export default function CVForm() {
     skills.length,
     state,
     summary,
+    sectionsTitle,
   ]);
 
   useEffect(() => {
@@ -127,6 +129,13 @@ export default function CVForm() {
     localStorage.setItem("userInfo", JSON.stringify(state));
   }, [state, hydrated]);
 
+  const editableSections = [Summary, Experience, Education, Skills];
+  const arrayOfIcons = [
+    AiOutlineAlignLeft,
+    LuBriefcaseBusiness,
+    SlGraduation,
+    LuBrain,
+  ];
   // Render
   return (
     <>
@@ -138,10 +147,18 @@ export default function CVForm() {
         className="flex-1 min-w-100 xl:h-[80vh] max-xl:pb-4 overflow-auto p-4"
       >
         <PersonalInfo inputClasses={inputClasses} />
-        <Summary />
-        <Experience inputClasses={inputClasses} />
-        <Education inputClasses={inputClasses} />
-        <Skills />
+        {editableSections.map((Section, index) => (
+          <Section
+            key={index}
+            inputClasses={inputClasses}
+            section={state.sectionsTitle[index]}
+          >
+            <SectionTitle
+              section={state.sectionsTitle[index]}
+              Icon={arrayOfIcons[index]}
+            />
+          </Section>
+        ))}
         <MoreSections />
         <button
           className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-2 border-dashed border-[#B4C5FF] p-1 text-center text-lg font-semibold text-[#004AC6]"

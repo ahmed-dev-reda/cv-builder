@@ -6,6 +6,8 @@ import Link from "next/link";
 import simple from "@/thumbnails/simple.jpg";
 import minimalist from "@/thumbnails/minimalist.jpg";
 import classicOne from "@/thumbnails/classic_one.jpg";
+import classicTwo from "@/thumbnails/classic_two.png";
+import minimalistTwo from "@/thumbnails/minimalist_two.png";
 import { useDispatch } from "react-redux";
 import { setTemplate, TemplateType } from "@/lib/features/resumeSlice";
 
@@ -21,6 +23,14 @@ const templates: Template[] = [
   {
     name: "classicOne",
     image: classicOne,
+  },
+  {
+    name: "classicTwo",
+    image: classicTwo,
+  },
+  {
+    name: "minimalistTwo",
+    image: minimalistTwo,
   },
 ];
 type Template = {

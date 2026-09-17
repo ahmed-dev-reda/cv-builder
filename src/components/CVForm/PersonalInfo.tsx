@@ -7,8 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function PersonalInfo({
   inputClasses,
+
 }: {
   inputClasses: string;
+  
 }) {
   const { personalInfo, template } = useSelector(
     (state: RootState) => state.resume,

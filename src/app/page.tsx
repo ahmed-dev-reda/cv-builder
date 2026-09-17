@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Now CV",
-  url: "https://nowcv.com",
+  url: "https://now-cv.com",
   description:
     "Online CV and resume builder for creating professional resumes.",
   applicationCategory: "BusinessApplication",

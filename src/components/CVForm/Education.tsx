@@ -1,14 +1,22 @@
-import { addEducation } from "@/lib/features/resumeSlice";
+import { addEducation, SectionName } from "@/lib/features/resumeSlice";
 import { RootState } from "@/lib/store";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
-import { SlGraduation } from "react-icons/sl";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import { v4 as uuidv4 } from "uuid";
 import EducationJSX from "./EducationItem";
-export default function Education({ inputClasses }: { inputClasses: string }) {
+export default function Education({
+  inputClasses,
+  section,
+  children,
+}: {
+  inputClasses: string;
+  section: SectionName;
+  children: React.ReactNode;
+}) {
   const state = useSelector((state: RootState) => state.resume);
   const dispatch = useDispatch();
 
@@ -32,10 +40,7 @@ export default function Education({ inputClasses }: { inputClasses: string }) {
         className={`mt-4 overflow-hidden border border-[#C3C6D7] rounded-md shadow-lg shadow-gray-300/45 transition-all ${showEducations ? "max-h-dvh" : "max-h-11"}`}
       >
         <div className="flex items-center justify-between border-b border-b-[#C3C6D7] bg-[#F8F9FF] px-4 py-2">
-          <h2 className="flex items-center gap-2 text-lg font-semibold">
-            <SlGraduation color="#0D47A1" />
-            Educations
-          </h2>
+          {children}
           <button
             className={`cursor-pointer transition-all ${!showEducations && "rotate-180"}`}
             onClick={() => setShowEducations(!showEducations)}

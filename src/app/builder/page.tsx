@@ -15,6 +15,8 @@ import { RootState } from "@/lib/store";
 import BuilderHeader from "@/components/builder/BuilderHeader";
 import { TemplateType } from "@/lib/features/resumeSlice";
 import { motion } from "motion/react";
+import ClassicTwo from "@/templates/ClassicTwo";
+import MinimalistTwo from "@/templates/MinimalistTwo";
 
 // Builder page — form editor, live preview, and PDF export
 export default function Builder() {
@@ -30,6 +32,8 @@ export default function Builder() {
     simple: Simple,
     minimalist: Minimalist,
     classicOne: ClassicOne,
+    classicTwo: ClassicTwo,
+    minimalistTwo: MinimalistTwo,
   };
   const Template = templates[template];
 
@@ -161,11 +165,11 @@ export default function Builder() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex justify-center  mt-10 max-xl:zoom-75 max-lg:zoom-60"
+          className="h-full flex justify-center mt-10 max-xl:zoom-75 max-lg:zoom-60"
         >
           <div
             ref={ref}
-            className="h-280.75 w-198.5 origin-top bg-white font-inter"
+            className={`h-280.75 w-198.5 origin-top bg-white ${resumeData.font}`}
           >
             <Template />
           </div>

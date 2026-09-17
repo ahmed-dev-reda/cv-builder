@@ -1,5 +1,6 @@
 import {
   removeSkill,
+  SectionName,
   setSkills,
   type Single,
 } from "@/lib/features/resumeSlice";
@@ -7,12 +8,20 @@ import { RootState } from "@/lib/store";
 import { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
-import { LuBrain } from "react-icons/lu";
+
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
 // Skill Fields
-export default function Skills() {
+export default function Skills({
+  inputClasses,
+  section,
+  children,
+}: {
+  inputClasses: string;
+  section: SectionName;
+  children: React.ReactNode;
+}) {
   const skills = useSelector((state: RootState) => state.resume.skills);
   const dispatch = useDispatch();
 
@@ -30,10 +39,8 @@ export default function Skills() {
       className={`mt-4 flex-1 basis-sm overflow-hidden border border-[#C3C6D7] rounded-md shadow-md shadow-gray-300/45 transition-all ${showSkills ? "max-h-dvh" : "max-h-11"}`}
     >
       <div className="flex items-center justify-between border-b border-b-[#C3C6D7] bg-[#F8F9FF] px-4 py-2">
-        <h2 className="flex items-center gap-2 text-lg font-semibold">
-          <LuBrain color="#0D47A1" />
-          Skills
-        </h2>
+        {children}
+
         <button
           className={`cursor-pointer transition-all ${!showSkills && "rotate-180"}`}
           onClick={() => setShowSkills(!showSkills)}
