@@ -13,7 +13,10 @@ export default function ClassicFour() {
     <div className="mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111]">
       {/* ================= HEADER ================= */}
       <header className="text-center">
-        <h1 className="text-[30px] font-bold uppercase leading-none">
+        <h1
+          className="text-[30px] font-bold uppercase leading-none"
+          style={{ color }}
+        >
           {personalInfo.fullName || "FIRST M. LAST"}
         </h1>
 
@@ -213,6 +216,7 @@ function Section({
         className="border-b text-[17px] font-bold uppercase"
         style={{
           borderColor: color,
+          color,
         }}
       >
         {title}
