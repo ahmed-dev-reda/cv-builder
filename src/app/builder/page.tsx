@@ -18,6 +18,8 @@ import { motion } from "motion/react";
 import ClassicTwo from "@/templates/ClassicTwo";
 import MinimalistTwo from "@/templates/MinimalistTwo";
 import DownloadSuccess from "@/components/builder/DownloadSuccess";
+import ClassicThree from "@/templates/ClassicThree";
+import ClassicFour from "@/templates/ClassicFour";
 
 // Builder page — form editor, live preview, and PDF export
 export default function Builder() {
@@ -35,6 +37,8 @@ export default function Builder() {
     classicOne: ClassicOne,
     classicTwo: ClassicTwo,
     minimalistTwo: MinimalistTwo,
+    classicThree: ClassicThree,
+    classicFour: ClassicFour,
   };
   const Template = templates[template];
 
@@ -138,7 +142,7 @@ export default function Builder() {
         animate={{ x: 0 }}
         className="flex flex-1 flex-col border-r border-gray-300 bg-[#F8F9FF] shadow-2xl"
       >
-        <div className="flex-1 overflow-hidden ">
+        <div className="flex-1 overflow-hidden">
           <CVForm />
         </div>
 
@@ -171,7 +175,7 @@ export default function Builder() {
         >
           <div
             ref={ref}
-            className={`h-280.75 w-198.5 origin-top bg-white ${resumeData.font}`}
+            className={`max-h-280.75 w-198.5 h-dvh origin-top bg-white ${resumeData.font}`}
           >
             <Template />
           </div>

@@ -13,6 +13,8 @@ const templates = [
   { id: "classicOne", label: "ClassicOne" },
   { id: "classicTwo", label: "ClassicTwo" },
   { id: "minimalistTwo", label: "MinimalistTwo" },
+  { id: "classicThree", label: "ClassicThree" },
+  { id: "classicFour", label: "ClassicFour" },
 ] as const;
 
 export default function BuilderHeader() {

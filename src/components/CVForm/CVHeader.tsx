@@ -30,6 +30,10 @@ const fonts = [
     className: roboto.className,
   },
   {
+    name: "Times New Roman",
+    className: "font-times-new-roman",
+  },
+  {
     name: "Open Sans",
     className: openSans.className,
   },

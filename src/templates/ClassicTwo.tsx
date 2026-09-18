@@ -28,9 +28,7 @@ export default function ClassicTwo() {
             )}
           </div>
 
-          <div className="text-right text-[13.5px]">
-            {personalInfo.address && <p>{personalInfo.address}</p>}
-
+          <div className="text-[13.5px]">
             {personalInfo.phone && <p>{personalInfo.phone}</p>}
 
             {personalInfo.email && (
@@ -42,23 +40,27 @@ export default function ClassicTwo() {
               </a>
             )}
 
-            {personalInfo.website && (
-              <a
-                href={`https://${personalInfo.website}`}
-                target="_blank"
-                rel="noreferrer"
-                className="block hover:underline"
-              >
-                {personalInfo.website}
-              </a>
-            )}
+            <div className="flex justify-between">
+              {" "}
+              {personalInfo.website && (
+                <a
+                  href={`https://${personalInfo.website}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block hover:underline"
+                >
+                  {personalInfo.website}
+                </a>
+              )}
+              {personalInfo.address && <p>{personalInfo.address}</p>}
+            </div>
           </div>
         </div>
       </header>
 
       {/* ==================== Summary ==================== */}
       {resumeData.summary && (
-        <section className="mt-6">
+        <section className="mt-2">
           <SectionHeading
             title={resumeData.sectionsTitle[0].name}
             color={color}
@@ -70,7 +72,7 @@ export default function ClassicTwo() {
 
       {/* ==================== Experience ==================== */}
       {resumeData.experience.length > 0 && (
-        <section className="mt-7">
+        <section className="mt-2">
           <SectionHeading
             title={resumeData.sectionsTitle[1].name}
             color={color}
@@ -116,7 +118,7 @@ export default function ClassicTwo() {
 
       {/* ==================== Education ==================== */}
       {resumeData.education.length > 0 && (
-        <section className="mt-7">
+        <section className="mt-2">
           <SectionHeading
             title={resumeData.sectionsTitle[2].name}
             color={color}
@@ -170,7 +172,7 @@ export default function ClassicTwo() {
 
       {/* ==================== Skills ==================== */}
       {resumeData.skills.length > 0 && (
-        <section className="mt-7">
+        <section className="mt-2">
           <SectionHeading
             title={resumeData.sectionsTitle[3].name}
             color={color}
@@ -195,10 +197,10 @@ export default function ClassicTwo() {
         (section) =>
           section.sectionName &&
           section.body.length > 0 && (
-            <section key={section.id} className="mt-7">
+            <section key={section.id} className="mt-2">
               <SectionHeading title={section.sectionName} color={color} />
 
-              <ul className="mt-3 space-y-1 pl-6">
+              <ul className="flex flex-wrap gap-x-10 mt-3 space-y-1 pl-6">
                 {section.body.map((item) => (
                   <li key={item.id} className="list-disc text-[14.5px]">
                     {item.name}

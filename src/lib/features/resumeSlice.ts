@@ -77,7 +77,9 @@ export type TemplateType =
   | "minimalist"
   | "classicOne"
   | "classicTwo"
-  | "minimalistTwo";
+  | "minimalistTwo"
+  | "classicThree"
+  | "classicFour";
 // --- Initial state ---
 
 const initialState: ResumeState = {

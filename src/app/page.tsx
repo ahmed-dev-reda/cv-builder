@@ -5,6 +5,7 @@ import Hero from "@/components/home/Hero";
 import Stats from "@/components/home/Stats";
 import Steps from "@/components/home/Steps";
 import Templates from "@/components/home/Templates";
+import HydrationLoader from "@/components/HydrationLoader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-};const jsonLd = {
+};
+const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Now CV",
@@ -25,23 +27,24 @@ export const metadata: Metadata = {
   operatingSystem: "Web",
 };
 
-
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F8F9FF] text-[#171923]">
-      <Header />
-      <Hero />
-      <Stats />
-      <Features />
-      <Steps />
-      <Templates />
-      <Footer />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
-      />
-    </main>
+    <HydrationLoader>
+      <main className="min-h-screen bg-[#F8F9FF] text-[#171923]">
+        <Header />
+        <Hero />
+        <Stats />
+        <Features />
+        <Steps />
+        <Templates />
+        <Footer />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
+      </main>
+    </HydrationLoader>
   );
 }

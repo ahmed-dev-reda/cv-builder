@@ -5,11 +5,11 @@ export default function ClassicOne() {
   const resumeData = useSelector((state: RootState) => state.resume);
   const color = useSelector((state: RootState) => state.resume.color);
   return (
-    <div className="w-full p-10 classic">
+    <div className="w-full p-10">
       {/* Personal Info */}
       {resumeData.personalInfo.fullName && (
         <h2
-          className="mb-2 text-center text-3xl font-medium capitalize"
+          className="mb-1 text-center text-3xl font-medium capitalize"
           style={{ color }}
         >
           {resumeData.personalInfo.fullName}
@@ -65,13 +65,13 @@ export default function ClassicOne() {
 
       {/* Profile */}
       {resumeData.summary && (
-        <div className="mt-6">
+        <div className="mt-4">
           <h2 className="text-xl font-semibold uppercase" style={{ color }}>
             {resumeData.sectionsTitle[0].name}
           </h2>
 
           <div
-            className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
             style={{ backgroundColor: color }}
           />
 
@@ -83,14 +83,14 @@ export default function ClassicOne() {
       {resumeData.education.length > 0 && (
         <div>
           <h2
-            className="mt-6 text-xl font-semibold uppercase"
+            className="mt-2 text-xl font-semibold uppercase"
             style={{ color }}
           >
             {resumeData.sectionsTitle[2].name}
           </h2>
 
           <div
-            className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
             style={{ backgroundColor: color }}
           />
 
@@ -100,7 +100,7 @@ export default function ClassicOne() {
                 <span>{edu.institution}</span>
 
                 {(edu.startDate || edu.endDate) && (
-                  <span className="font-medium">
+                  <span className="font-medium text-[14px]">
                     {edu.startDate}
                     {edu.startDate && edu.endDate && " - "}
                     {edu.endDate || (edu.startDate && "Present")}
@@ -134,14 +134,14 @@ export default function ClassicOne() {
       {resumeData.experience.length > 0 && (
         <div>
           <h2
-            className="mt-6 text-xl font-semibold uppercase"
+            className="mt-2 text-xl font-semibold uppercase"
             style={{ color }}
           >
             {resumeData.sectionsTitle[1].name}
           </h2>
 
           <div
-            className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
             style={{ backgroundColor: color }}
           />
 
@@ -151,7 +151,7 @@ export default function ClassicOne() {
                 <span>{exp.company}</span>
 
                 {(exp.startDate || exp.endDate) && (
-                  <span className="font-medium">
+                  <span className="font-medium text-[14px]">
                     {exp.startDate}
                     {exp.startDate && exp.endDate && " - "}
                     {exp.endDate || (exp.startDate && "Present")}
@@ -181,27 +181,27 @@ export default function ClassicOne() {
       {(resumeData.skills.length > 0 || resumeData.moreSections.length > 0) && (
         <div>
           <h2
-            className="mt-6 text-xl font-semibold uppercase"
+            className="mt-2 text-xl font-semibold uppercase"
             style={{ color }}
           >
             {resumeData.sectionsTitle[3].name}
           </h2>
 
           <div
-            className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
             style={{ backgroundColor: color }}
           />
 
           <ul className="my-2 list-disc pl-8">
             {resumeData.skills.length > 0 && (
-              <li>
+              <li className="text-[15px]">
                 Technical Skills:{" "}
                 {resumeData.skills.map((s) => s.name).join(", ")}
               </li>
             )}
 
             {resumeData.moreSections.map((sec) => (
-              <li key={sec.id}>
+              <li key={sec.id} className="text-[15px]">
                 {sec.sectionName}: {sec.body.map((s) => s.name).join(", ")}
               </li>
             ))}
