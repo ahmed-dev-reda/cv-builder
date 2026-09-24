@@ -49,7 +49,7 @@ export default function Templates() {
             <span className="text-sm font-semibold uppercase tracking-wider text-[#0D47A1]">
               Templates
             </span>
-
+<></>
             <h2 className="mt-3 text-4xl font-bold tracking-tight">
               Start with a professional design.
             </h2>
