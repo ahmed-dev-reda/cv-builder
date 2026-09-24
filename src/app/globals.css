@@ -1,12 +1,28 @@
 @import "tailwindcss";
+
 html {
   scroll-behavior: smooth;
 }
+
 body {
   font-family: var(--font-open-sans);
 }
 
+.templates-slider .swiper-button-next,
+.templates-slider .swiper-button-prev {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-.classic {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.font-times-new-roman {
   font-family: "Times New Roman", Times, serif;
 }

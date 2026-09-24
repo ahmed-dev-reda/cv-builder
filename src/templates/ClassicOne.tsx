@@ -1,229 +1,327 @@
+"use client";
+
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 
 export default function ClassicOne() {
   const resumeData = useSelector((state: RootState) => state.resume);
-  const color = useSelector((state: RootState) => state.resume.color);
+  const color = resumeData.color;
+
   return (
-    <div className="w-full p-10 classic">
+    <div className="w-full p-10">
       {/* Personal Info */}
-      <h2
-        className={`mb-2 text-center text-3xl font-medium capitalize ${
-          resumeData.personalInfo.fullName ? "" : "text-gray-400/50"
-        }`}
-        style={resumeData.personalInfo.fullName ? { color } : undefined}
-      >
-        {resumeData.personalInfo.fullName || "John Doe"}
-      </h2>
 
-      <div className="flex items-center justify-center gap-2 text-center">
-        {/* Email */}
-        <a
-          href={
-            resumeData.personalInfo.email
-              ? `mailto:${resumeData.personalInfo.email}`
-              : undefined
-          }
-          target="_blank"
-          className={`hover:bg-amber-50 ${
-            resumeData.personalInfo.email ? "" : "text-gray-400/50"
-          }`}
+      {resumeData.personalInfo.fullName && (
+        <h2
+          className="mb-1 text-center text-3xl font-medium capitalize"
+          style={{ color }}
         >
-          {resumeData.personalInfo.email || "john.doe@email.com"}
-        </a>
+          {resumeData.personalInfo.fullName}
+        </h2>
+      )}
 
-        {/* Separator */}
-        {(resumeData.personalInfo.email || !resumeData.personalInfo.email) &&
-          (resumeData.personalInfo.phone || !resumeData.personalInfo.phone) && (
+      {(resumeData.personalInfo.email ||
+        resumeData.personalInfo.phone ||
+        resumeData.personalInfo.website) && (
+        <div className="flex items-center justify-center gap-2 text-center">
+          {/* Email */}
+
+          {resumeData.personalInfo.email && (
+            <a
+              href={`mailto:${resumeData.personalInfo.email}`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:bg-amber-50"
+            >
+              {resumeData.personalInfo.email}
+            </a>
+          )}
+
+          {/* Separator */}
+
+          {resumeData.personalInfo.email &&
+            (resumeData.personalInfo.phone ||
+              resumeData.personalInfo.website) && (
+              <span className="h-3 w-px bg-gray-300" />
+            )}
+
+          {/* Phone */}
+
+          {resumeData.personalInfo.phone && (
+            <span>{resumeData.personalInfo.phone}</span>
+          )}
+
+          {/* Separator */}
+
+          {resumeData.personalInfo.phone && resumeData.personalInfo.website && (
             <span className="h-3 w-px bg-gray-300" />
           )}
 
-        {/* Phone */}
-        <span
-          className={resumeData.personalInfo.phone ? "" : "text-gray-400/50"}
-        >
-          {resumeData.personalInfo.phone || "+20 100 000 0000"}
-        </span>
+          {/* Website */}
 
-        {/* Separator */}
-        <span className="h-3 w-px bg-gray-300" />
-
-        {/* Website */}
-        <a
-          href={
-            resumeData.personalInfo.website
-              ? `https://${resumeData.personalInfo.website}`
-              : undefined
-          }
-          target="_blank"
-          className={`hover:bg-amber-50 ${
-            resumeData.personalInfo.website ? "" : "text-gray-400/50"
-          }`}
-        >
-          {resumeData.personalInfo.website || "www.johndoe.com"}
-        </a>
-      </div>
+          {resumeData.personalInfo.website && (
+            <a
+              href={
+                resumeData.personalInfo.website.startsWith("http")
+                  ? resumeData.personalInfo.website
+                  : `https://${resumeData.personalInfo.website}`
+              }
+              target="_blank"
+              rel="noreferrer"
+              className="hover:bg-amber-50"
+            >
+              {resumeData.personalInfo.website}
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Profile */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold uppercase" style={{ color }}>
-          Profile
-        </h2>
 
-        <div
-          className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
-          style={{ backgroundColor: color }}
-        />
+      {resumeData.summary && (
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold uppercase" style={{ color }}>
+            {resumeData.sectionsTitle[0]?.name || "Professional Summary"}
+          </h2>
 
-        <p
-          className={`text-[16px] ${
-            resumeData.summary ? "text-gray-900" : "text-gray-400/50"
-          }`}
-        >
-          {resumeData.summary ||
-            "Results-oriented professional with strong communication, problem-solving, and project management skills. Passionate about delivering high-quality results and working effectively with cross-functional teams."}
-        </p>
-      </div>
+          <div
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+
+          <p className="text-[16px]">{resumeData.summary}</p>
+        </div>
+      )}
 
       {/* Education */}
-      <div>
-        <h2 className="mt-6 text-xl font-semibold uppercase" style={{ color }}>
-          Education
-        </h2>
 
-        <div
-          className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
-          style={{ backgroundColor: color }}
-        />
+      {resumeData.education.length > 0 && (
+        <div>
+          <h2
+            className="mt-2 text-xl font-semibold uppercase"
+            style={{ color }}
+          >
+            {resumeData.sectionsTitle[2]?.name || "Education"}
+          </h2>
 
-        {resumeData.education.length > 0 ? (
-          resumeData.education.map((edu) => (
+          <div
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+
+          {resumeData.education.map((edu) => (
             <div key={edu.id}>
               <h3 className="flex justify-between text-[16px] font-semibold">
                 <span>{edu.institution}</span>
 
-                <span className="font-medium">
-                  {edu.startDate} {edu.startDate && edu.endDate && " - "}
-                  {edu.endDate || "Present"}
-                </span>
+                {(edu.startDate || edu.endDate) && (
+                  <span className="font-medium text-[14px]">
+                    {edu.startDate}
+
+                    {edu.startDate && edu.endDate && " - "}
+
+                    {edu.endDate || (edu.startDate && "Present")}
+                  </span>
+                )}
               </h3>
 
-              <h4 className="my-0.5 text-[14px]">{edu.degree}</h4>
+              {edu.degree && (
+                <h4 className="my-0.5 text-[14px]">{edu.degree}</h4>
+              )}
 
-              <h4 className="text-[14px]">Cumulative GPA: {edu.gpa}</h4>
+              {edu.gpa && (
+                <h4 className="text-[14px]">Cumulative GPA: {edu.gpa}</h4>
+              )}
+
+              {edu.points.length > 0 && (
+                <ul className="my-2 pl-8">
+                  {edu.points.map((desc, index) => (
+                    <li key={index} className="list-disc text-[14.2px]">
+                      {desc}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="text-gray-400/50">
-            <h3 className="flex justify-between text-[16px] font-semibold">
-              <span>University of Engineering</span>
-              <span className="font-medium">2020 - 2024</span>
-            </h3>
-
-            <h4 className="my-0.5 text-[14px]">Bachelor of Computer Science</h4>
-
-            <h4 className="text-[14px]">Cumulative GPA: 3.8 / 4.0</h4>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Work Experience */}
-      <div>
-        <h2 className="mt-6 text-xl font-semibold uppercase" style={{ color }}>
-          Work Experience
-        </h2>
 
-        <div
-          className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
-          style={{ backgroundColor: color }}
-        />
+      {resumeData.experience.length > 0 && (
+        <div>
+          <h2
+            className="mt-2 text-xl font-semibold uppercase"
+            style={{ color }}
+          >
+            {resumeData.sectionsTitle[1]?.name || "Work Experience"}
+          </h2>
 
-        {resumeData.experience.length > 0 ? (
-          resumeData.experience.map((exp) => (
+          <div
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+
+          {resumeData.experience.map((exp) => (
             <div key={exp.id}>
               <h3 className="flex justify-between text-[16px] font-semibold">
                 <span>{exp.company}</span>
 
-                <span className="font-medium">
-                  {exp.startDate} {exp.startDate && exp.endDate && " - "}
-                  {exp.endDate || "Present"}
-                </span>
+                {(exp.startDate || exp.endDate) && (
+                  <span className="font-medium text-[14px]">
+                    {exp.startDate}
+
+                    {exp.startDate && exp.endDate && " - "}
+
+                    {exp.endDate || (exp.startDate && "Present")}
+                  </span>
+                )}
               </h3>
 
-              <h4 className="my-0.5 text-[14px]">{exp.jobTitle}</h4>
+              {exp.jobTitle && (
+                <h4 className="my-0.5 text-[14px]">{exp.jobTitle}</h4>
+              )}
 
-              <ul className="my-2 pl-8">
-                {exp.points.map((desc, index) => (
-                  <li key={index} className="list-disc text-[14.2px]">
-                    {desc}
-                  </li>
-                ))}
-              </ul>
+              {exp.points.length > 0 && (
+                <ul className="my-2 pl-8">
+                  {exp.points.map((desc, index) => (
+                    <li key={index} className="list-disc text-[14.2px]">
+                      {desc}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="text-gray-400/50">
-            <h3 className="flex justify-between text-[16px] font-semibold">
-              <span>Example Company</span>
+          ))}
+        </div>
+      )}
 
-              <span className="font-medium">2024 - Present</span>
-            </h3>
+      {/* Projects */}
 
-            <h4 className="my-0.5 text-[14px]">Software Engineer</h4>
+      {resumeData.projects.length > 0 && (
+        <div>
+          <h2
+            className="mt-2 text-xl font-semibold uppercase"
+            style={{ color }}
+          >
+            {resumeData.sectionsTitle[3]?.name || "Projects"}
+          </h2>
 
-            <ul className="my-2 pl-8">
-              <li className="list-disc text-[14.2px]">
-                Developed and maintained modern web applications.
-              </li>
+          <div
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+            style={{ backgroundColor: color }}
+          />
 
-              <li className="list-disc text-[14.2px]">
-                Collaborated with cross-functional teams to deliver projects on
-                time.
-              </li>
+          {resumeData.projects.map((project) => (
+            <div key={project.id}>
+              <h3 className="flex justify-between text-[16px] font-semibold">
+                <span className="flex items-center gap-2">
+                  {project.name}
 
-              <li className="list-disc text-[14.2px]">
-                Improved application performance and user experience.
+                  {project.url && (
+                    <a
+                      href={
+                        project.url.startsWith("http")
+                          ? project.url
+                          : `https://${project.url}`
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[12px] font-normal hover:underline"
+                      style={{ color }}
+                    >
+                      [Link]
+                    </a>
+                  )}
+                </span>
+
+                {(project.startDate || project.endDate) && (
+                  <span className="font-medium text-[14px]">
+                    {project.startDate}
+
+                    {project.startDate && project.endDate && " - "}
+
+                    {project.endDate || (project.startDate && "Present")}
+                  </span>
+                )}
+              </h3>
+
+              {project.description && (
+                <p className="my-1 text-[14px]">{project.description}</p>
+              )}
+
+              {project.technologies.length > 0 && (
+                <p className="text-[13.5px]">
+                  <strong>Technologies:</strong>{" "}
+                  {project.technologies.join(", ")}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Skills */}
+
+      {resumeData.skills.length > 0 && (
+        <div>
+          <h2
+            className="mt-2 text-xl font-semibold uppercase"
+            style={{ color }}
+          >
+            {resumeData.sectionsTitle[4]?.name || "Skills"}
+          </h2>
+
+          <div
+            className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+
+          <ul className="my-2 list-disc pl-8">
+            <li className="text-[15px]">
+              Technical Skills:{" "}
+              {resumeData.skills.map((skill) => skill.name).join(", ")}
+            </li>
+          </ul>
+        </div>
+      )}
+
+      {/* Additional Sections */}
+
+      {resumeData.moreSections.map((sec) => {
+        if (!sec.sectionName || sec.body.length === 0) {
+          return null;
+        }
+
+        return (
+          <div key={sec.id}>
+            <h2
+              className="mt-2 text-xl font-semibold uppercase"
+              style={{ color }}
+            >
+              {sec.sectionName}
+            </h2>
+
+            <div
+              className="mb-2 mt-2 h-[1.3px] w-full rounded-sm"
+              style={{ backgroundColor: color }}
+            />
+
+            <ul className="my-2 list-disc pl-8">
+              <li className="text-[15px]">
+                {sec.body.map((item, index) => (
+                  <span key={item.id}>
+                    {item.name}
+
+                    {index !== sec.body.length - 1 && ", "}
+                  </span>
+                ))}
               </li>
             </ul>
           </div>
-        )}
-      </div>
-
-      {/* Additional Information */}
-      <div>
-        <h2 className="mt-6 text-xl font-semibold uppercase" style={{ color }}>
-          Skills
-        </h2>
-
-        <div
-          className="mb-6 mt-2 h-[1.3px] w-full rounded-sm"
-          style={{ backgroundColor: color }}
-        />
-
-        <ul
-          className={`my-2 list-disc pl-8 ${
-            resumeData.skills.length === 0 &&
-            resumeData.moreSections.length === 0
-              ? "text-gray-400/50"
-              : ""
-          }`}
-        >
-          {resumeData.skills.length > 0 ? (
-            <li>
-              Technical Skills:{" "}
-              {resumeData.skills.map((s) => s.name).join(", ")}
-            </li>
-          ) : (
-            <li>Technical Skills: React, Next.js, TypeScript</li>
-          )}
-
-          {resumeData.moreSections.map((sec) => (
-            <li key={sec.id}>
-              {sec.sectionName}: {sec.body.map((s) => s.name).join(", ")}
-            </li>
-          ))}
-        </ul>
-      </div>
+        );
+      })}
     </div>
   );
 }

@@ -72,7 +72,7 @@ export default function RootLayout({
       lang="en"
       className={`${openSans.className} ${inter.className} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex flex-col">
         <StoreProvider>{children}</StoreProvider>
       </body>
     </html>

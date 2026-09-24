@@ -1,9 +1,12 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
+
 import { setResume, addMoreSection } from "@/lib/features/resumeSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 
@@ -12,35 +15,51 @@ import PersonalInfo from "../CVForm/PersonalInfo";
 import Summary from "../CVForm/Summary";
 import Experience from "../CVForm/Experience";
 import Education from "../CVForm/Education";
+import Projects from "../CVForm/Projects";
 import MoreSections from "../CVForm/MoreSections";
 import Skills from "../CVForm/SkillsField";
 
-// Resume data entry form — dispatches Redux updates and persists to localStorage
+import { AiOutlineAlignLeft } from "react-icons/ai";
+import { LuBriefcaseBusiness } from "react-icons/lu";
+import { SlGraduation } from "react-icons/sl";
+import { LuBrain } from "react-icons/lu";
+import { LuFolderKanban } from "react-icons/lu";
+
+import SectionTitle from "../CVForm/reusable/SectionTitle";
+
 export default function CVForm() {
   const state = useSelector((state: RootState) => state.resume);
+
   const dispatch = useDispatch();
 
   const [hydrated, setHydrated] = useState(false);
+
   const {
     education,
     experience,
-    languages,
+    projects,
     personalInfo,
     skills,
     summary,
     color,
+    moreSections,
   } = state;
 
-  // Constants
+  // --------------------------------
+  // Input classes
+  // --------------------------------
 
   const inputClasses =
     "block w-full mt-0.5 p-1.5 indent-2 border border-gray-300 rounded-sm bg-gray-50/99 transition-all focus:outline-none focus:border-[#0D47A1]";
+
+  // --------------------------------
+  // Progress
+  // --------------------------------
+
   const [progress, setProgress] = useState<number>(0);
 
-  // Completion score mapped to a 0–100 percentage (max progress = 320)
   const percentage = (progress * 100) / 320;
 
-  // Recalculate profile completion whenever resume fields change
   useEffect(() => {
     function trackingProgress() {
       let newProgress = 0;
@@ -77,30 +96,34 @@ export default function CVForm() {
         newProgress += 15;
       }
 
-      if (skills.length > 0) {
-        newProgress += 10;
+      if (projects.length > 0) {
+        newProgress += 15;
       }
 
-      if (languages.length > 0) {
+      if (skills.length > 0) {
         newProgress += 10;
       }
 
       setProgress(newProgress);
     }
+
     trackingProgress();
   }, [
     education.length,
     experience.length,
-    languages.length,
+    projects.length,
     personalInfo.address.length,
     personalInfo.email.length,
     personalInfo.fullName.length,
     personalInfo.phone.length,
     personalInfo.website.length,
     skills.length,
-    state,
     summary,
   ]);
+
+  // --------------------------------
+  // Load localStorage
+  // --------------------------------
 
   useEffect(() => {
     function loadData() {
@@ -109,6 +132,7 @@ export default function CVForm() {
       if (savedUser) {
         try {
           const data = JSON.parse(savedUser);
+
           dispatch(setResume(data));
         } catch (error) {
           console.error("Failed to load resume:", error);
@@ -117,46 +141,140 @@ export default function CVForm() {
 
       setHydrated(true);
     }
+
     loadData();
   }, [dispatch]);
 
-  // Persist entire resume state to localStorage after initial hydration
+  // --------------------------------
+  // Save localStorage
+  // --------------------------------
+
   useEffect(() => {
     if (!hydrated) return;
 
     localStorage.setItem("userInfo", JSON.stringify(state));
   }, [state, hydrated]);
 
+  // --------------------------------
+  // Main Sections
+  // --------------------------------
+
+  const editableSections = [Summary, Experience, Education, Projects, Skills];
+
+  const arrayOfIcons = [
+    AiOutlineAlignLeft,
+    LuBriefcaseBusiness,
+    SlGraduation,
+    LuFolderKanban,
+    LuBrain,
+  ];
+
+  // --------------------------------
+  // Additional Sections
+  // --------------------------------
+
+  const availableSections = [
+    "Certifications",
+    "Languages",
+    "Courses",
+    "Awards",
+    "Volunteering",
+    "Interests",
+    "Hobbies",
+  ];
+
+  // --------------------------------
+  // Check if section already exists
+  // --------------------------------
+
+  const isSectionAdded = (sectionName: string) => {
+    return moreSections.some(
+      (section) =>
+        section.sectionName.toLowerCase() === sectionName.toLowerCase(),
+    );
+  };
+
+  // --------------------------------
+  // Add Section
+  // --------------------------------
+
+  const handleAddSection = (sectionName: string) => {
+    if (isSectionAdded(sectionName)) return;
+
+    dispatch(
+      addMoreSection({
+        id: uuidv4(),
+        sectionName,
+        body: [],
+        sectionType: "secondary",
+      }),
+    );
+  };
+
+  // --------------------------------
   // Render
+  // --------------------------------
+
   return (
     <>
       <Progress percentage={percentage} color={color} />
+
       <motion.form
         initial={{ x: -300 }}
         animate={{ x: 0 }}
         onSubmit={(e) => e.preventDefault()}
-        className="flex-1 min-w-100 xl:h-[80vh] max-xl:pb-4 overflow-auto p-4"
+        className="min-w-100 max-xl:pb-4 flex-1 overflow-auto p-4"
       >
+        {/* Personal Information */}
         <PersonalInfo inputClasses={inputClasses} />
-        <Summary />
-        <Experience inputClasses={inputClasses} />
-        <Education inputClasses={inputClasses} />
-        <Skills />
+
+        {/* Main Sections */}
+        {editableSections.map((Section, index) => (
+          <Section
+            key={index}
+            inputClasses={inputClasses}
+            section={state.sectionsTitle[index]}
+          >
+            <SectionTitle
+              section={state.sectionsTitle[index]}
+              Icon={arrayOfIcons[index]}
+            />
+          </Section>
+        ))}
+
+        {/* Added Additional Sections */}
         <MoreSections />
-        <button
-          className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-2 border-dashed border-[#B4C5FF] p-1 text-center text-lg font-semibold text-[#004AC6]"
-          onClick={() => {
-            dispatch(
-              addMoreSection({
-                id: uuidv4(),
-                sectionName: "New Section",
-                body: [],
-              }),
-            );
-          }}
-        >
-          <FaPlus size={15} /> Add Section
-        </button>
+
+        {/* -------------------------------- */}
+        {/* Add Section Buttons */}
+        {/* -------------------------------- */}
+
+        <div className="mt-4">
+          <p className="mb-2 text-sm font-semibold text-gray-600">
+            Add More Sections
+          </p>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {availableSections.map((sectionName) => {
+              const exists = isSectionAdded(sectionName);
+
+              if (exists) return null;
+
+              return (
+                <button
+                  key={sectionName}
+                  type="button"
+                  className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border-2 border-dashed border-[#B4C5FF] p-2 text-sm font-semibold text-[#004AC6] transition hover:bg-[#F3F6FF]"
+                  onClick={() => handleAddSection(sectionName)}
+                >
+                  <FaPlus size={12} />
+
+                  {sectionName}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </motion.form>
     </>
   );

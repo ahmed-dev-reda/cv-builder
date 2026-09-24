@@ -11,6 +11,10 @@ const templates = [
   { id: "simple", label: "Simple" },
   { id: "minimalist", label: "Minimalist" },
   { id: "classicOne", label: "ClassicOne" },
+  { id: "classicTwo", label: "ClassicTwo" },
+  { id: "minimalistTwo", label: "MinimalistTwo" },
+  { id: "classicThree", label: "ClassicThree" },
+  { id: "classicFour", label: "ClassicFour" },
 ] as const;
 
 export default function BuilderHeader() {
@@ -27,10 +31,12 @@ export default function BuilderHeader() {
     <motion.nav
       initial={{ y: -50 }}
       animate={{ y: 0 }}
-      className="flex items-center justify-between bg-[#F8F9FF] px-6 py-3"
+      className="flex items-center justify-between bg-inherit px-6 py-3"
     >
-      <h1 className="text-lg font-semibold text-[#1e1e1e]">Resume Builder</h1>
-      <div className="flex items-center gap-2">
+      <h1 className="hidden xl:block mr-4 text-lg font-semibold text-[#1e1e1e]">
+        Resume Builder
+      </h1>
+      <div className="flex items-center gap-2 flex-col md:flex-row">
         <span className="text-sm">Choose Template: </span>
         <div className="relative">
           {/* Button */}
