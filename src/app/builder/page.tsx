@@ -19,6 +19,81 @@ import ClassicFour from "@/templates/ClassicFour";
 
 import { RootState } from "@/lib/store";
 import { TemplateType } from "@/lib/features/resumeSlice";
+import {
+  inter,
+  lato,
+  merriweather,
+  montserrat,
+  nunito,
+  openSans,
+  oswald,
+  playfairDisplay,
+  poppins,
+  roboto,
+} from "@/lib/fonts";
+
+const fontMap: Record<
+  string,
+  {
+    className: string;
+    fontFamily: string;
+  }
+> = {
+  inter: {
+    className: inter.className,
+    fontFamily: inter.style.fontFamily,
+  },
+
+  roboto: {
+    className: roboto.className,
+    fontFamily: roboto.style.fontFamily,
+  },
+
+  "open-sans": {
+    className: openSans.className,
+    fontFamily: openSans.style.fontFamily,
+  },
+
+  lato: {
+    className: lato.className,
+    fontFamily: lato.style.fontFamily,
+  },
+
+  montserrat: {
+    className: montserrat.className,
+    fontFamily: montserrat.style.fontFamily,
+  },
+
+  poppins: {
+    className: poppins.className,
+    fontFamily: poppins.style.fontFamily,
+  },
+
+  merriweather: {
+    className: merriweather.className,
+    fontFamily: merriweather.style.fontFamily,
+  },
+
+  "playfair-display": {
+    className: playfairDisplay.className,
+    fontFamily: playfairDisplay.style.fontFamily,
+  },
+
+  oswald: {
+    className: oswald.className,
+    fontFamily: oswald.style.fontFamily,
+  },
+
+  nunito: {
+    className: nunito.className,
+    fontFamily: nunito.style.fontFamily,
+  },
+
+  "times-new-roman": {
+    className: "",
+    fontFamily: '"Times New Roman", serif',
+  },
+};
 
 export default function Builder() {
   const resumeData = useSelector((state: RootState) => state.resume);
@@ -29,7 +104,7 @@ export default function Builder() {
     .toLowerCase();
 
   const template: TemplateType = resumeData.template;
-
+  const selectedFont = fontMap[resumeData.font] ?? fontMap.inter;
   const templates = {
     simple: Simple,
     minimalist: Minimalist,
@@ -59,7 +134,6 @@ export default function Builder() {
   const resetZoom = () => {
     setZoom(1);
   };
-
   const handleDownloadPDF = async () => {
     const element = ref.current;
 
@@ -77,37 +151,47 @@ export default function Builder() {
         .join("\n");
 
       const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8" />
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8" />
 
-            <style>
-              ${styles}
+          <style>
+            ${styles}
 
-              @page {
-                size: A4;
-                margin: 0;
-              }
+            @page {
+              size: A4;
+              margin: 0;
+            }
 
-              html,
-              body {
-                margin: 0;
-                padding: 0;
-                background: white;
-              }
+            html,
+            body {
+              margin: 0;
+              padding: 0;
+              background: white;
+            }
 
-              * {
-                box-sizing: border-box;
-              }
-            </style>
-          </head>
+            * {
+              box-sizing: border-box;
+            }
 
-          <body>
+            .cv-font,
+            .cv-font * {
+              font-family: ${selectedFont.fontFamily} !important;
+            }
+          </style>
+        </head>
+
+        <body>
+          <div
+            class="cv-font"
+            style="font-family: ${selectedFont.fontFamily};"
+          >
             ${element.outerHTML}
-          </body>
-        </html>
-      `;
+          </div>
+        </body>
+      </html>
+    `;
 
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
@@ -124,6 +208,7 @@ export default function Builder() {
       }
 
       const blob = await response.blob();
+
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement("a");
@@ -132,7 +217,9 @@ export default function Builder() {
       link.download = `${fullName || "my"}-cv.pdf`;
 
       document.body.appendChild(link);
+
       link.click();
+
       link.remove();
 
       URL.revokeObjectURL(url);
@@ -142,7 +229,6 @@ export default function Builder() {
       console.error("PDF generation failed:", error);
     }
   };
-
   return (
     <main className="flex h-dvh w-full flex-col overflow-hidden bg-[#eef2f7] xl:flex-row">
       {/* ================= FORM ================= */}
