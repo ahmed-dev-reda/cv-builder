@@ -10,7 +10,9 @@ export default function ClassicTwo() {
   const { personalInfo } = resumeData;
 
   return (
-    <div className="w-full bg-white p-10 text-black">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${resumeData.font}`}
+    >
       {/* ==================== Header ==================== */}
 
       <header className="border-b-2 pb-5" style={{ borderColor: color }}>

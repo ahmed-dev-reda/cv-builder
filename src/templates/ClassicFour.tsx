@@ -16,10 +16,13 @@ export default function ClassicFour() {
     skills,
     moreSections,
     sectionsTitle,
+    font,
   } = resume;
 
   return (
-    <div className="mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111]">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${font}`}
+    >
       {/* ================= HEADER ================= */}
 
       <header className="text-center">

@@ -19,7 +19,9 @@ export default function MinimalistTwo() {
   } = resumeData;
 
   return (
-    <div className="flex min-h-full w-full bg-white text-black">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${resumeData.font}`}
+    >
       {/* ================= Sidebar ================= */}
 
       <aside

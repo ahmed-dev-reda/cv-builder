@@ -16,10 +16,13 @@ export default function ClassicThree() {
     skills,
     moreSections,
     sectionsTitle,
+    font,
   } = resume;
 
   return (
-    <div className="mx-auto min-h-[1123px] w-[794px] bg-white px-[40px] py-[55px]">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${font}`}
+    >
       {/* Header */}
 
       <header className="grid grid-cols-[1fr_300px] gap-8">

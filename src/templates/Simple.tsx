@@ -1,4 +1,3 @@
-
 "use client";
 
 import { RootState } from "@/lib/store";
@@ -20,7 +19,9 @@ export default function Simple() {
   } = resumeData;
 
   return (
-    <div className="w-full p-10">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${resumeData.font}`}
+    >
       {/* ================================= */}
       {/* Header */}
       {/* ================================= */}
@@ -254,25 +255,20 @@ export default function Simple() {
 
                     {project.startDate && project.endDate && " - "}
 
-                    {project.endDate ||
-                      (project.startDate && "Present")}
+                    {project.endDate || (project.startDate && "Present")}
                   </p>
                 )}
               </div>
 
               {/* Description */}
               {project.description && (
-                <p className="mt-1 text-[14px]">
-                  {project.description}
-                </p>
+                <p className="mt-1 text-[14px]">{project.description}</p>
               )}
 
               {/* Technologies */}
               {project.technologies.length > 0 && (
                 <p className="mt-1 text-[14px]">
-                  <span className="font-semibold">
-                    Technologies:
-                  </span>{" "}
+                  <span className="font-semibold">Technologies:</span>{" "}
                   {project.technologies.join(", ")}
                 </p>
               )}

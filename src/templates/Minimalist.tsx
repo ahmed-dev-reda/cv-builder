@@ -18,7 +18,9 @@ export default function Minimalist() {
   const color = resumeData.color;
 
   return (
-    <div className="w-full p-10">
+    <div
+      className={`mx-auto min-h-[1123px] w-[794px] bg-white px-[52px] py-[45px] text-[#111] ${resumeData.font}`}
+    >
       {/* Personal Info */}
 
       <h2
