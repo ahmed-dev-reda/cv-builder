@@ -1,7 +1,10 @@
 "use client";
 
+import * as React from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
+import type { SectionId } from "@/lib/features/resumeSlice";
+import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function ClassicFour() {
   const resume = useSelector((state: RootState) => state.resume);
@@ -18,6 +21,201 @@ export default function ClassicFour() {
     sectionsTitle,
     font,
   } = resume;
+
+  const order = getSectionOrder(resume);
+
+  const blocks: Record<SectionId, React.ReactNode> = {
+    summary: summary ? (
+      <Section
+        title={sectionsTitle.summary?.name || "PROFESSIONAL SUMMARY"}
+        color={color}
+      >
+        <p className="text-[14px] leading-5">{summary}</p>
+      </Section>
+    ) : null,
+
+    experience: experience.length > 0 ? (
+      <Section title={sectionsTitle.experience?.name || "EXPERIENCE"} color={color}>
+        <div className="space-y-4">
+          {experience.map((item) => (
+            <div key={item.id}>
+              {/* Company + Location */}
+
+              <div className="flex items-baseline justify-between gap-6">
+                <h3 className="text-[16px] font-bold uppercase">
+                  {item.company}
+                </h3>
+
+                {personalInfo.address && (
+                  <span className="shrink-0 text-[15px]">
+                    {personalInfo.address}
+                  </span>
+                )}
+              </div>
+
+              {/* Job + Date */}
+
+              <div className="flex items-baseline justify-between gap-6">
+                <p className="text-[15px] italic">{item.jobTitle}</p>
+
+                {(item.startDate || item.endDate) && (
+                  <p className="shrink-0 text-[15px]">
+                    {item.startDate}
+
+                    {item.startDate && item.endDate && " – "}
+
+                    {item.endDate || (item.startDate && "Present")}
+                  </p>
+                )}
+              </div>
+
+              {/* Description */}
+
+              {item.points.length > 0 && (
+                <ul className="mt-1 list-disc space-y-0 pl-6 text-[14px] leading-[18px]">
+                  {item.points.map((point, index) => (
+                    <li key={index}>{point}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    education: education.length > 0 ? (
+      <Section title={sectionsTitle.education?.name || "EDUCATION"} color={color}>
+        <div className="space-y-4">
+          {education.map((item) => (
+            <div key={item.id}>
+              {/* University + Location */}
+
+              <div className="flex items-baseline justify-between gap-6">
+                <h3 className="text-[16px] font-bold uppercase">
+                  {item.institution}
+                </h3>
+
+                {personalInfo.address && (
+                  <span className="shrink-0 text-[15px]">
+                    {personalInfo.address}
+                  </span>
+                )}
+              </div>
+
+              {/* Degree + Date */}
+
+              <div className="flex items-baseline justify-between gap-6">
+                <p className="text-[15px] italic">{item.degree}</p>
+
+                {(item.startDate || item.endDate) && (
+                  <p className="shrink-0 text-[15px]">
+                    {item.startDate}
+
+                    {item.startDate && item.endDate && " – "}
+
+                    {item.endDate || (item.startDate && "Present")}
+                  </p>
+                )}
+              </div>
+
+              {item.points.length > 0 && (
+                <ul className="mt-1 list-disc space-y-0 pl-6 text-[14px] leading-[18px]">
+                  {item.points.map((point, index) => (
+                    <li key={index}>{point}</li>
+                  ))}
+                </ul>
+              )}
+
+              {item.gpa && (
+                <p className="text-[14px]">
+                  <strong>GPA:</strong> {item.gpa}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    projects: projects.length > 0 ? (
+      <Section title={sectionsTitle.projects?.name || "PROJECTS"} color={color}>
+        <div className="space-y-4">
+          {projects.map((project) => (
+            <article key={project.id}>
+              {/* Project + Date */}
+
+              <div className="flex items-baseline justify-between gap-6">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-[16px] font-bold">{project.name}</h3>
+
+                  {project.url && (
+                    <a
+                      href={
+                        project.url.startsWith("http")
+                          ? project.url
+                          : `https://${project.url}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[12px] hover:underline"
+                      style={{ color }}
+                    >
+                      [Link]
+                    </a>
+                  )}
+                </div>
+
+                {(project.startDate || project.endDate) && (
+                  <p className="shrink-0 text-[15px]">
+                    {project.startDate}
+
+                    {project.startDate && project.endDate && " – "}
+
+                    {project.endDate || (project.startDate && "Present")}
+                  </p>
+                )}
+              </div>
+
+              {/* Description */}
+
+              {project.description && (
+                <p className="mt-1 text-[14px] leading-5">
+                  {project.description}
+                </p>
+              )}
+
+              {/* Technologies */}
+
+              {project.technologies.length > 0 && (
+                <p className="mt-1 text-[13.5px]">
+                  <strong>Technologies:</strong>{" "}
+                  {project.technologies.join(", ")}
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    skills: skills.length > 0 ? (
+      <Section title={sectionsTitle.skills?.name || "SKILLS"} color={color}>
+        <div className="text-[14px] leading-5">
+          <p>
+            <strong>Technical Skills:</strong>{" "}
+            {skills.map((skill, index) => (
+              <span key={skill.id}>
+                {skill.name}
+
+                {index < skills.length - 1 && ", "}
+              </span>
+            ))}
+          </p>
+        </div>
+      </Section>
+    ) : null,
+  };
 
   return (
     <div
@@ -90,206 +288,9 @@ export default function ClassicFour() {
         </div>
       </header>
 
-      {/* ================= SUMMARY ================= */}
+      {/* ================= ORDERED SECTIONS ================= */}
 
-      {summary && (
-        <Section
-          title={sectionsTitle[0]?.name || "PROFESSIONAL SUMMARY"}
-          color={color}
-        >
-          <p className="text-[14px] leading-5">{summary}</p>
-        </Section>
-      )}
-
-      {/* ================= EXPERIENCE ================= */}
-
-      {experience.length > 0 && (
-        <Section title={sectionsTitle[1]?.name || "EXPERIENCE"} color={color}>
-          <div className="space-y-4">
-            {experience.map((item) => (
-              <div key={item.id}>
-                {/* Company + Location */}
-
-                <div className="flex items-baseline justify-between gap-6">
-                  <h3 className="text-[16px] font-bold uppercase">
-                    {item.company}
-                  </h3>
-
-                  {personalInfo.address && (
-                    <span className="shrink-0 text-[15px]">
-                      {personalInfo.address}
-                    </span>
-                  )}
-                </div>
-
-                {/* Job + Date */}
-
-                <div className="flex items-baseline justify-between gap-6">
-                  <p className="text-[15px] italic">{item.jobTitle}</p>
-
-                  {(item.startDate || item.endDate) && (
-                    <p className="shrink-0 text-[15px]">
-                      {item.startDate}
-
-                      {item.startDate && item.endDate && " – "}
-
-                      {item.endDate || (item.startDate && "Present")}
-                    </p>
-                  )}
-                </div>
-
-                {/* Description */}
-
-                {item.points.length > 0 && (
-                  <ul className="mt-1 list-disc space-y-0 pl-6 text-[14px] leading-[18px]">
-                    {item.points.map((point, index) => (
-                      <li key={index}>{point}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* ================= EDUCATION ================= */}
-
-      {education.length > 0 && (
-        <Section title={sectionsTitle[2]?.name || "EDUCATION"} color={color}>
-          <div className="space-y-4">
-            {education.map((item) => (
-              <div key={item.id}>
-                {/* University + Location */}
-
-                <div className="flex items-baseline justify-between gap-6">
-                  <h3 className="text-[16px] font-bold uppercase">
-                    {item.institution}
-                  </h3>
-
-                  {personalInfo.address && (
-                    <span className="shrink-0 text-[15px]">
-                      {personalInfo.address}
-                    </span>
-                  )}
-                </div>
-
-                {/* Degree + Date */}
-
-                <div className="flex items-baseline justify-between gap-6">
-                  <p className="text-[15px] italic">{item.degree}</p>
-
-                  {(item.startDate || item.endDate) && (
-                    <p className="shrink-0 text-[15px]">
-                      {item.startDate}
-
-                      {item.startDate && item.endDate && " – "}
-
-                      {item.endDate || (item.startDate && "Present")}
-                    </p>
-                  )}
-                </div>
-
-                {item.points.length > 0 && (
-                  <ul className="mt-1 list-disc space-y-0 pl-6 text-[14px] leading-[18px]">
-                    {item.points.map((point, index) => (
-                      <li key={index}>{point}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {item.gpa && (
-                  <p className="text-[14px]">
-                    <strong>GPA:</strong> {item.gpa}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* ================= PROJECTS ================= */}
-
-      {projects.length > 0 && (
-        <Section title={sectionsTitle[3]?.name || "PROJECTS"} color={color}>
-          <div className="space-y-4">
-            {projects.map((project) => (
-              <article key={project.id}>
-                {/* Project + Date */}
-
-                <div className="flex items-baseline justify-between gap-6">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-[16px] font-bold">{project.name}</h3>
-
-                    {project.url && (
-                      <a
-                        href={
-                          project.url.startsWith("http")
-                            ? project.url
-                            : `https://${project.url}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[12px] hover:underline"
-                        style={{ color }}
-                      >
-                        [Link]
-                      </a>
-                    )}
-                  </div>
-
-                  {(project.startDate || project.endDate) && (
-                    <p className="shrink-0 text-[15px]">
-                      {project.startDate}
-
-                      {project.startDate && project.endDate && " – "}
-
-                      {project.endDate || (project.startDate && "Present")}
-                    </p>
-                  )}
-                </div>
-
-                {/* Description */}
-
-                {project.description && (
-                  <p className="mt-1 text-[14px] leading-5">
-                    {project.description}
-                  </p>
-                )}
-
-                {/* Technologies */}
-
-                {project.technologies.length > 0 && (
-                  <p className="mt-1 text-[13.5px]">
-                    <strong>Technologies:</strong>{" "}
-                    {project.technologies.join(", ")}
-                  </p>
-                )}
-              </article>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* ================= SKILLS ================= */}
-
-      {skills.length > 0 && (
-        <Section title={sectionsTitle[4]?.name || "SKILLS"} color={color}>
-          <div className="text-[14px] leading-5">
-            <p>
-              <strong>Technical Skills:</strong>{" "}
-              {skills.map((skill, index) => (
-                <span key={skill.id}>
-                  {skill.name}
-
-                  {index < skills.length - 1 && ", "}
-                </span>
-              ))}
-            </p>
-          </div>
-        </Section>
-      )}
+      <OrderedSections order={order} blocks={blocks} />
 
       {/* ================= ADDITIONAL SECTIONS ================= */}
 

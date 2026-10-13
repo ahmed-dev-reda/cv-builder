@@ -61,6 +61,9 @@ export type SectionName = {
   name: string;
 };
 
+// Stable section identifiers — these never change, only their order does
+export type SectionId = "summary" | "experience" | "education" | "projects" | "skills";
+
 export type CVPage = {
   id: number;
   sections: NewSection[];
@@ -101,21 +104,30 @@ const initialState: ResumeState = {
   projects: [],
   moreSections: [],
 
-  sectionsTitle: [
-    { id: 1, name: "Professional Summary" },
-    { id: 2, name: "Work Experience" },
-    { id: 3, name: "Educations" },
-    { id: 4, name: "Projects" },
-    { id: 5, name: "Skills" },
-  ],
+  // SectionsTitle is now a record keyed by stable section ID
+  sectionsTitle: {
+    summary: { id: 1, name: "Professional Summary" },
+    experience: { id: 2, name: "Work Experience" },
+    education: { id: 3, name: "Educations" },
+    projects: { id: 4, name: "Projects" },
+    skills: { id: 5, name: "Skills" },
+  },
+
+  // The order in which sections appear — this is what DnD reorders
+  sectionOrder: ["summary", "experience", "education", "projects", "skills"],
 
   font: "inter",
 };
 
+export function createDefaultResumeState(): ResumeState {
+  return JSON.parse(JSON.stringify(initialState)) as ResumeState;
+}
+
 export type ResumeState = {
   color: string;
 
-  sectionsTitle: SectionName[];
+  sectionsTitle: Record<SectionId, SectionName>;
+  sectionOrder: SectionId[];
 
   personalInfo: {
     fullName: string;
@@ -168,8 +180,14 @@ const resumeSlice = createSlice({
 
     setTemplate: (state, action: PayloadAction<TemplateType>) => {
       state.template = action.payload;
+    },
 
-      localStorage.setItem("userInfo", JSON.stringify(state));
+    // --------------------------------
+    // Section Order — the source of truth for DnD reordering
+    // --------------------------------
+
+    setSectionOrder: (state, action: PayloadAction<SectionId[]>) => {
+      state.sectionOrder = action.payload;
     },
 
     // --------------------------------
@@ -443,19 +461,27 @@ const resumeSlice = createSlice({
     },
 
     // --------------------------------
-    // Section Name
+    // Section Name — now keyed by SectionId
     // --------------------------------
 
-    updateSectionName: (state, action: PayloadAction<SectionName>) => {
-      const { id, name } = action.payload;
+    updateSectionName: (
+      state,
+      action: PayloadAction<{ sectionId: SectionId; name: string }>,
+    ) => {
+      const { sectionId, name } = action.payload;
+      state.sectionsTitle[sectionId].name = name;
+    },
 
-      state.sectionsTitle = state.sectionsTitle.map((title) => {
-        if (title.id === id) {
-          title.name = name;
-        }
+    setExperience: (state, action: PayloadAction<Experience[]>) => {
+      state.experience = action.payload;
+    },
 
-        return title;
-      });
+    setEducation: (state, action: PayloadAction<Education[]>) => {
+      state.education = action.payload;
+    },
+
+    setProjects: (state, action: PayloadAction<Project[]>) => {
+      state.projects = action.payload;
     },
 
     // --------------------------------
@@ -550,6 +576,7 @@ export const {
 
   updateSummary,
   updateSectionName,
+  setSectionOrder,
 
   setFont,
 

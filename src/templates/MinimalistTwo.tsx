@@ -1,7 +1,10 @@
 "use client";
 
+import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
+import type { SectionId } from "@/lib/features/resumeSlice";
+import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function MinimalistTwo() {
   const resumeData = useSelector((state: RootState) => state.resume);
@@ -17,6 +20,200 @@ export default function MinimalistTwo() {
     moreSections,
     sectionsTitle,
   } = resumeData;
+
+  // Main-column sections follow the editor's drag-and-drop order.
+  // Skills + additional sections live in the fixed sidebar by design.
+  const mainOrder = getSectionOrder(resumeData).filter(
+    (id) => id !== "skills",
+  );
+
+  const mainBlocks: Record<SectionId, React.ReactNode> = {
+    summary: summary ? (
+      <section>
+        <MainTitle
+          title={sectionsTitle.summary?.name || "Summary"}
+          color={color}
+        />
+
+        <p className="mt-3 text-[14.5px]">{summary}</p>
+      </section>
+    ) : null,
+
+    experience: experience.length > 0 ? (
+      <section className="mt-8">
+        <MainTitle
+          title={sectionsTitle.experience?.name || "Work Experience"}
+          color={color}
+        />
+
+        <div className="mt-4 space-y-6">
+          {experience.map((exp) => (
+            <article key={exp.id}>
+              <div className="flex justify-between gap-4">
+                <div>
+                  {exp.company && (
+                    <h3 className="text-[17px] font-bold">{exp.company}</h3>
+                  )}
+
+                  {exp.jobTitle && (
+                    <p className="text-[14px] italic" style={{ color }}>
+                      {exp.jobTitle}
+                    </p>
+                  )}
+                </div>
+
+                {(exp.startDate || exp.endDate) && (
+                  <span className="shrink-0 text-[13px]">
+                    {exp.startDate}
+
+                    {exp.startDate && exp.endDate && " – "}
+
+                    {exp.endDate || (exp.startDate && "Present")}
+                  </span>
+                )}
+              </div>
+
+              {exp.points.length > 0 && (
+                <ul className="mt-2 space-y-1 pl-5">
+                  {exp.points.map((point, index) => (
+                    <li key={index} className="list-disc text-[14px]">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    education: education.length > 0 ? (
+      <section className="mt-8">
+        <MainTitle
+          title={sectionsTitle.education?.name || "Education"}
+          color={color}
+        />
+
+        <div className="mt-4 space-y-6">
+          {education.map((edu) => (
+            <article key={edu.id}>
+              <div className="flex justify-between gap-4">
+                <div>
+                  {edu.institution && (
+                    <h3 className="text-[17px] font-bold">
+                      {edu.institution}
+                    </h3>
+                  )}
+
+                  {edu.degree && (
+                    <p className="text-[14px] italic" style={{ color }}>
+                      {edu.degree}
+                    </p>
+                  )}
+                </div>
+
+                {(edu.startDate || edu.endDate) && (
+                  <span className="shrink-0 text-[13px]">
+                    {edu.startDate}
+
+                    {edu.startDate && edu.endDate && " – "}
+
+                    {edu.endDate || (edu.startDate && "Present")}
+                  </span>
+                )}
+              </div>
+
+              {edu.gpa && (
+                <p className="mt-1 text-[13.5px]">
+                  <strong>GPA:</strong> {edu.gpa}
+                </p>
+              )}
+
+              {edu.points.length > 0 && (
+                <ul className="mt-2 space-y-1 pl-5">
+                  {edu.points.map((point, index) => (
+                    <li key={index} className="list-disc text-[14px]">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    projects: projects.length > 0 ? (
+      <section className="mt-8">
+        <MainTitle
+          title={sectionsTitle.projects?.name || "Projects"}
+          color={color}
+        />
+
+        <div className="mt-4 space-y-6">
+          {projects.map((project) => (
+            <article key={project.id}>
+              {/* Project Header */}
+              <div className="flex justify-between gap-4">
+                <div>
+                  {project.name && (
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-[17px] font-bold">
+                        {project.name}
+                      </h3>
+
+                      {project.url && (
+                        <a
+                          href={
+                            project.url.startsWith("http")
+                              ? project.url
+                              : `https://${project.url}`
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[12px] underline"
+                          style={{ color }}
+                        >
+                          View Project
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {(project.startDate || project.endDate) && (
+                  <span className="shrink-0 text-[13px]">
+                    {project.startDate}
+
+                    {project.startDate && project.endDate && " – "}
+
+                    {project.endDate || (project.startDate && "Present")}
+                  </span>
+                )}
+              </div>
+
+              {/* Description */}
+              {project.description && (
+                <p className="mt-2 text-[14px]">{project.description}</p>
+              )}
+
+              {/* Technologies */}
+              {project.technologies.length > 0 && (
+                <p className="mt-1 text-[13.5px]">
+                  <strong>Technologies:</strong>{" "}
+                  {project.technologies.join(", ")}
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null,
+
+    skills: null,
+  };
 
   return (
     <div
@@ -90,7 +287,7 @@ export default function MinimalistTwo() {
         {skills.length > 0 && (
           <div className="mt-8">
             <SidebarTitle
-              title={sectionsTitle[4]?.name || "Skills"}
+              title={sectionsTitle.skills?.name || "Skills"}
               color={color}
             />
 
@@ -129,193 +326,7 @@ export default function MinimalistTwo() {
       {/* ================= Main Content ================= */}
 
       <main className="flex-1 p-10">
-        {/* Summary */}
-        {summary && (
-          <section>
-            <MainTitle
-              title={sectionsTitle[0]?.name || "Summary"}
-              color={color}
-            />
-
-            <p className="mt-3 text-[14.5px]">{summary}</p>
-          </section>
-        )}
-
-        {/* Experience */}
-        {experience.length > 0 && (
-          <section className="mt-8">
-            <MainTitle
-              title={sectionsTitle[1]?.name || "Work Experience"}
-              color={color}
-            />
-
-            <div className="mt-4 space-y-6">
-              {experience.map((exp) => (
-                <article key={exp.id}>
-                  <div className="flex justify-between gap-4">
-                    <div>
-                      {exp.company && (
-                        <h3 className="text-[17px] font-bold">{exp.company}</h3>
-                      )}
-
-                      {exp.jobTitle && (
-                        <p className="text-[14px] italic" style={{ color }}>
-                          {exp.jobTitle}
-                        </p>
-                      )}
-                    </div>
-
-                    {(exp.startDate || exp.endDate) && (
-                      <span className="shrink-0 text-[13px]">
-                        {exp.startDate}
-
-                        {exp.startDate && exp.endDate && " – "}
-
-                        {exp.endDate || (exp.startDate && "Present")}
-                      </span>
-                    )}
-                  </div>
-
-                  {exp.points.length > 0 && (
-                    <ul className="mt-2 space-y-1 pl-5">
-                      {exp.points.map((point, index) => (
-                        <li key={index} className="list-disc text-[14px]">
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Education */}
-        {education.length > 0 && (
-          <section className="mt-8">
-            <MainTitle
-              title={sectionsTitle[2]?.name || "Education"}
-              color={color}
-            />
-
-            <div className="mt-4 space-y-6">
-              {education.map((edu) => (
-                <article key={edu.id}>
-                  <div className="flex justify-between gap-4">
-                    <div>
-                      {edu.institution && (
-                        <h3 className="text-[17px] font-bold">
-                          {edu.institution}
-                        </h3>
-                      )}
-
-                      {edu.degree && (
-                        <p className="text-[14px] italic" style={{ color }}>
-                          {edu.degree}
-                        </p>
-                      )}
-                    </div>
-
-                    {(edu.startDate || edu.endDate) && (
-                      <span className="shrink-0 text-[13px]">
-                        {edu.startDate}
-
-                        {edu.startDate && edu.endDate && " – "}
-
-                        {edu.endDate || (edu.startDate && "Present")}
-                      </span>
-                    )}
-                  </div>
-
-                  {edu.gpa && (
-                    <p className="mt-1 text-[13.5px]">
-                      <strong>GPA:</strong> {edu.gpa}
-                    </p>
-                  )}
-
-                  {edu.points.length > 0 && (
-                    <ul className="mt-2 space-y-1 pl-5">
-                      {edu.points.map((point, index) => (
-                        <li key={index} className="list-disc text-[14px]">
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Projects */}
-        {projects.length > 0 && (
-          <section className="mt-8">
-            <MainTitle
-              title={sectionsTitle[3]?.name || "Projects"}
-              color={color}
-            />
-
-            <div className="mt-4 space-y-6">
-              {projects.map((project) => (
-                <article key={project.id}>
-                  {/* Project Header */}
-                  <div className="flex justify-between gap-4">
-                    <div>
-                      {project.name && (
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[17px] font-bold">
-                            {project.name}
-                          </h3>
-
-                          {project.url && (
-                            <a
-                              href={
-                                project.url.startsWith("http")
-                                  ? project.url
-                                  : `https://${project.url}`
-                              }
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[12px] underline"
-                              style={{ color }}
-                            >
-                              View Project
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {(project.startDate || project.endDate) && (
-                      <span className="shrink-0 text-[13px]">
-                        {project.startDate}
-
-                        {project.startDate && project.endDate && " – "}
-
-                        {project.endDate || (project.startDate && "Present")}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  {project.description && (
-                    <p className="mt-2 text-[14px]">{project.description}</p>
-                  )}
-
-                  {/* Technologies */}
-                  {project.technologies.length > 0 && (
-                    <p className="mt-1 text-[13.5px]">
-                      <strong>Technologies:</strong>{" "}
-                      {project.technologies.join(", ")}
-                    </p>
-                  )}
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
+        <OrderedSections order={mainOrder} blocks={mainBlocks} />
       </main>
     </div>
   );

@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import { FaPlus } from "react-icons/fa";
+import { motion } from "motion/react";
 
-import { setResume, addMoreSection } from "@/lib/features/resumeSlice";
-
-import { useDispatch, useSelector } from "react-redux";
+import { addMoreSection, setSectionOrder } from "@/lib/features/resumeSlice";
 import { RootState } from "@/lib/store";
+import { useAppDispatch } from "@/lib/hooks";
 
 import Progress from "../CVForm/CVHeader";
 import PersonalInfo from "../CVForm/PersonalInfo";
@@ -26,13 +26,27 @@ import { LuBrain } from "react-icons/lu";
 import { LuFolderKanban } from "react-icons/lu";
 
 import SectionTitle from "../CVForm/reusable/SectionTitle";
+import { SortableProvider } from "../dnd/SortableProvider";
+import { SortableItem } from "../dnd/SortableItem";
+import type { IconType } from "react-icons";
+
+import type { SectionId } from "@/lib/features/resumeSlice";
+
+// Section registry — maps stable section IDs to their components and icons
+const sectionRegistry: Record<
+  SectionId,
+  { component: React.ElementType; icon: IconType }
+> = {
+  summary: { component: Summary, icon: AiOutlineAlignLeft },
+  experience: { component: Experience, icon: LuBriefcaseBusiness },
+  education: { component: Education, icon: SlGraduation },
+  projects: { component: Projects, icon: LuFolderKanban },
+  skills: { component: Skills, icon: LuBrain },
+};
 
 export default function CVForm() {
   const state = useSelector((state: RootState) => state.resume);
-
-  const dispatch = useDispatch();
-
-  const [hydrated, setHydrated] = useState(false);
+  const dispatch = useAppDispatch();
 
   const {
     education,
@@ -50,7 +64,7 @@ export default function CVForm() {
   // --------------------------------
 
   const inputClasses =
-    "block w-full mt-0.5 p-1.5 indent-2 border border-gray-300 rounded-sm bg-gray-50/99 transition-all focus:outline-none focus:border-[#0D47A1]";
+    "block w-full mt-0.5 p-1.5 indent-2 border border-border rounded-md bg-gray-50/50 transition-all focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-sm";
 
   // --------------------------------
   // Progress
@@ -122,54 +136,6 @@ export default function CVForm() {
   ]);
 
   // --------------------------------
-  // Load localStorage
-  // --------------------------------
-
-  useEffect(() => {
-    function loadData() {
-      const savedUser = localStorage.getItem("userInfo");
-
-      if (savedUser) {
-        try {
-          const data = JSON.parse(savedUser);
-
-          dispatch(setResume(data));
-        } catch (error) {
-          console.error("Failed to load resume:", error);
-        }
-      }
-
-      setHydrated(true);
-    }
-
-    loadData();
-  }, [dispatch]);
-
-  // --------------------------------
-  // Save localStorage
-  // --------------------------------
-
-  useEffect(() => {
-    if (!hydrated) return;
-
-    localStorage.setItem("userInfo", JSON.stringify(state));
-  }, [state, hydrated]);
-
-  // --------------------------------
-  // Main Sections
-  // --------------------------------
-
-  const editableSections = [Summary, Experience, Education, Projects, Skills];
-
-  const arrayOfIcons = [
-    AiOutlineAlignLeft,
-    LuBriefcaseBusiness,
-    SlGraduation,
-    LuFolderKanban,
-    LuBrain,
-  ];
-
-  // --------------------------------
   // Additional Sections
   // --------------------------------
 
@@ -212,6 +178,19 @@ export default function CVForm() {
   };
 
   // --------------------------------
+  // Drag and Drop for sections
+  // --------------------------------
+
+  const sectionIds = state.sectionOrder;
+
+  const handleSectionReorder = useCallback(
+    (newOrder: string[]) => {
+      dispatch(setSectionOrder(newOrder as SectionId[]));
+    },
+    [dispatch],
+  );
+
+  // --------------------------------
   // Render
   // --------------------------------
 
@@ -228,19 +207,24 @@ export default function CVForm() {
         {/* Personal Information */}
         <PersonalInfo inputClasses={inputClasses} />
 
-        {/* Main Sections */}
-        {editableSections.map((Section, index) => (
-          <Section
-            key={index}
-            inputClasses={inputClasses}
-            section={state.sectionsTitle[index]}
-          >
-            <SectionTitle
-              section={state.sectionsTitle[index]}
-              Icon={arrayOfIcons[index]}
-            />
-          </Section>
-        ))}
+        {/* Main Sections with Drag and Drop — rendered in sectionOrder */}
+        <SortableProvider items={sectionIds} onReorder={handleSectionReorder}>
+          {sectionIds.map((sectionId) => {
+            const { component: Component, icon: Icon } = sectionRegistry[sectionId];
+
+            return (
+              <SortableItem key={sectionId} id={sectionId}>
+                <Component inputClasses={inputClasses}>
+                  <SectionTitle
+                    sectionId={sectionId}
+                    section={state.sectionsTitle[sectionId]}
+                    Icon={Icon}
+                  />
+                </Component>
+              </SortableItem>
+            );
+          })}
+        </SortableProvider>
 
         {/* Added Additional Sections */}
         <MoreSections />
@@ -250,7 +234,7 @@ export default function CVForm() {
         {/* -------------------------------- */}
 
         <div className="mt-4">
-          <p className="mb-2 text-sm font-semibold text-gray-600">
+          <p className="mb-2 text-sm font-semibold text-muted">
             Add More Sections
           </p>
 
@@ -264,11 +248,10 @@ export default function CVForm() {
                 <button
                   key={sectionName}
                   type="button"
-                  className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border-2 border-dashed border-[#B4C5FF] p-2 text-sm font-semibold text-[#004AC6] transition hover:bg-[#F3F6FF]"
+                  className="flex cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary-200 p-2 text-sm font-semibold text-primary transition hover:bg-primary-50"
                   onClick={() => handleAddSection(sectionName)}
                 >
-                  <FaPlus size={12} />
-
+                  <FaPlus className="h-3 w-3" />
                   {sectionName}
                 </button>
               );

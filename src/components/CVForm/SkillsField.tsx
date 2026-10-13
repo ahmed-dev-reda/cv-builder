@@ -1,6 +1,5 @@
 import {
   removeSkill,
-  SectionName,
   setSkills,
   type Single,
 } from "@/lib/features/resumeSlice";
@@ -13,15 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
 // Skill Fields
-export default function Skills({
-  inputClasses,
-  section,
-  children,
-}: {
-  inputClasses: string;
-  section: SectionName;
-  children: React.ReactNode;
-}) {
+export default function Skills({ children }: { children: React.ReactNode }) {
   const skills = useSelector((state: RootState) => state.resume.skills);
   const dispatch = useDispatch();
 

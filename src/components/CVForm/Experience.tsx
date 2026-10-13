@@ -1,25 +1,28 @@
-import { addExperience, SectionName } from "@/lib/features/resumeSlice";
-import { RootState } from "@/lib/store";
+"use client";
+
+import * as React from "react";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import { RootState } from "@/lib/store";
+import { addExperience } from "@/lib/features/resumeSlice";
 import ExperienceItem from "./ExperienceItem";
 import { FaPlus } from "react-icons/fa";
-import SectionTitle from "./reusable/SectionTitle";
+import { SortableProvider } from "../dnd/SortableProvider";
+import { SortableItem } from "../dnd/SortableItem";
+
 export default function Experience({
   inputClasses,
-  section,
   children,
 }: {
   inputClasses: string;
-  section: SectionName;
   children: React.ReactNode;
 }) {
   const state = useSelector((state: RootState) => state.resume);
   const dispatch = useDispatch();
   const [showExperiences, setShowExperiences] = useState<boolean>(false);
+
   function createNewExperience() {
     dispatch(
       addExperience({
@@ -33,35 +36,49 @@ export default function Experience({
     );
   }
 
+  const experienceIds = state.experience.map((exp) => exp.id);
+
+  const handleReorder = (newOrder: string[]) => {
+    const newExperience = newOrder.map((id) =>
+      state.experience.find((exp) => exp.id === id),
+    ).filter(Boolean);
+
+    dispatch({
+      type: "resume/setExperience",
+      payload: newExperience,
+    });
+  };
+
   return (
     <div>
       <div
-        className={`mt-4 overflow-hidden border border-[#C3C6D7] rounded-md shadow-lg shadow-gray-300/45
-           transition-all ${showExperiences ? "max-h-dvh" : "max-h-11"}`}
+        className={`mt-4 overflow-hidden border border-border rounded-lg shadow-sm transition-all ${showExperiences ? "max-h-dvh" : "max-h-11"}`}
       >
-        <div className="flex items-center justify-between border-b border-b-[#C3C6D7] bg-[#F8F9FF] px-4 py-2">
+        <div className="flex items-center justify-between border-b border-border bg-background px-4 py-2">
           {children}
           <button
             className={`cursor-pointer transition-all ${!showExperiences && "rotate-180"}`}
             onClick={() => setShowExperiences(!showExperiences)}
           >
-            <IoIosArrowDown size={25} />
+            <IoIosArrowDown className="h-5 w-5" />
           </button>
         </div>
-        <div className="bg-white p-4">
-          {state.experience.map((exp) => (
-            <ExperienceItem
-              exp={exp}
-              inputClasses={inputClasses}
-              key={exp.id}
-            />
-          ))}
+        <div className="bg-surface p-4">
+          <SortableProvider items={experienceIds} onReorder={handleReorder}>
+            {state.experience.map((exp) => (
+              <SortableItem key={exp.id} id={exp.id}>
+                <ExperienceItem
+                  exp={exp}
+                  inputClasses={inputClasses}
+                />
+              </SortableItem>
+            ))}
+          </SortableProvider>
           <button
-            className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border-2
-             border-dashed border-[#B4C5FF] p-1 text-center text-lg font-semibold text-[#004AC6]"
+            className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary-200 p-1 text-center text-lg font-semibold text-primary transition hover:bg-primary-50"
             onClick={createNewExperience}
           >
-            <FaPlus size={15} /> Add Experience
+            <FaPlus className="h-4 w-4" /> Add Experience
           </button>
         </div>
       </div>

@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { CgCheck } from "react-icons/cg";
 import { GoPencil } from "react-icons/go";
-import { TbTrash } from "react-icons/tb";
 
-import { updateSectionName } from "@/lib/features/resumeSlice";
+import { updateSectionName, type SectionId } from "@/lib/features/resumeSlice";
 import { IconType } from "react-icons";
 
 type Section = {
@@ -15,10 +14,11 @@ type Section = {
 };
 
 type SectionTitleProps = {
+  sectionId: SectionId;
   section: Section;
   Icon: IconType;
 };
-export default function SectionTitle({ section, Icon }: SectionTitleProps) {
+export default function SectionTitle({ sectionId, section, Icon }: SectionTitleProps) {
   const dispatch = useDispatch();
 
   const [isEdit, setIsEdit] = useState(false);
@@ -29,7 +29,7 @@ export default function SectionTitle({ section, Icon }: SectionTitleProps) {
 
     dispatch(
       updateSectionName({
-        id: section.id,
+        sectionId,
         name: sectionName.trim(),
       }),
     );

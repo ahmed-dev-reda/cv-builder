@@ -1,19 +1,11 @@
-import { type SectionName, updateSummary } from "@/lib/features/resumeSlice";
+import { updateSummary } from "@/lib/features/resumeSlice";
 import { RootState } from "@/lib/store";
 import { useState } from "react";
 
 import { IoIosArrowDown } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function Summary({
-  inputClasses,
-  section,
-  children,
-}: {
-  inputClasses: string;
-  section: SectionName;
-  children: React.ReactNode;
-}) {
+export default function Summary({ children }: { children: React.ReactNode }) {
   const summary = useSelector((state: RootState) => state.resume.summary);
   const dispatch = useDispatch();
   const [showSummary, setShowSummary] = useState<boolean>(false);

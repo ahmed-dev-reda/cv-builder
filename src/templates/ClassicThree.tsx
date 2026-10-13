@@ -1,7 +1,10 @@
 "use client";
 
+import * as React from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
+import type { SectionId } from "@/lib/features/resumeSlice";
+import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function ClassicThree() {
   const resume = useSelector((state: RootState) => state.resume);
@@ -18,6 +21,157 @@ export default function ClassicThree() {
     sectionsTitle,
     font,
   } = resume;
+
+  const order = getSectionOrder(resume);
+
+  const blocks: Record<SectionId, React.ReactNode> = {
+    summary: summary ? (
+      <Section
+        title={sectionsTitle.summary?.name || "PROFESSIONAL SUMMARY"}
+        color={color}
+      >
+        <p className="text-[13.5px] leading-5.5 -my-2" style={{ color }}>
+          {summary}
+        </p>
+      </Section>
+    ) : null,
+
+    experience: experience.length > 0 ? (
+      <Section title={sectionsTitle.experience?.name || "EXPERIENCE"} color={color}>
+        <div className="space-y-2">
+          {experience.map((item) => (
+            <div key={item.id} className="grid grid-cols-[155px_1fr] gap-5">
+              <div className="text-[13px] text-[#858585]">
+                {item.startDate}
+
+                {item.endDate && ` - ${item.endDate}`}
+
+                {!item.endDate && item.startDate && " - Present"}
+              </div>
+
+              <div className="text-[13.5px] leading-[19px]">
+                <h3 className="font-bold">{item.jobTitle}</h3>
+
+                {item.company && (
+                  <p className="text-[#999]">{item.company}</p>
+                )}
+
+                {item.points.length > 0 && (
+                  <ul className="mt-1 list-disc space-y-[1px] pl-4">
+                    {item.points.map((point, index) => (
+                      <li key={index}>{point}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    education: education.length > 0 ? (
+      <Section title={sectionsTitle.education?.name || "EDUCATION"} color={color}>
+        <div className="space-y-2">
+          {education.map((item) => (
+            <div key={item.id} className="grid grid-cols-[155px_1fr] gap-5">
+              <div className="text-[13px] text-[#858585]">
+                {item.startDate}
+
+                {item.endDate && ` - ${item.endDate}`}
+
+                {!item.endDate && item.startDate && " - Present"}
+              </div>
+
+              <div className="text-[13.5px] leading-[19px]">
+                <h3 className="font-bold">{item.degree}</h3>
+
+                {item.institution && (
+                  <p className="text-[#999]">{item.institution}</p>
+                )}
+
+                {item.points.length > 0 && (
+                  <ul className="list-disc pl-4">
+                    {item.points.map((point, index) => (
+                      <li key={index}>{point}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {item.gpa && <p>GPA: {item.gpa}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    projects: projects.length > 0 ? (
+      <Section title={sectionsTitle.projects?.name || "PROJECTS"} color={color}>
+        <div className="space-y-3">
+          {projects.map((project) => (
+            <article
+              key={project.id}
+              className="grid grid-cols-[155px_1fr] gap-5"
+            >
+              <div className="text-[13px] text-[#858585]">
+                {project.startDate}
+
+                {project.endDate && ` - ${project.endDate}`}
+
+                {!project.endDate && project.startDate && " - Present"}
+              </div>
+
+              <div className="text-[13.5px] leading-[19px]">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold">{project.name}</h3>
+
+                  {project.url && (
+                    <a
+                      href={
+                        project.url.startsWith("http")
+                          ? project.url
+                          : `https://${project.url}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[12px] hover:underline"
+                      style={{ color }}
+                    >
+                      View Project
+                    </a>
+                  )}
+                </div>
+
+                {project.description && (
+                  <p className="mt-1">{project.description}</p>
+                )}
+
+                {project.technologies.length > 0 && (
+                  <p className="mt-1 text-[13px]">
+                    <strong>Technologies:</strong>{" "}
+                    {project.technologies.join(", ")}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
+    skills: skills.length > 0 ? (
+      <Section title={sectionsTitle.skills?.name || "SKILLS"} color={color}>
+        <ul className="ml-4 grid grid-cols-4 gap-x-12">
+          {skills.map((skill) => (
+            <li key={skill.id} className="list-disc text-[13.5px]">
+              {skill.name}
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ) : null,
+  };
 
   return (
     <div
@@ -72,162 +226,9 @@ export default function ClassicThree() {
         </div>
       </header>
 
-      {/* Summary */}
+      {/* Ordered sections — follows the editor's drag-and-drop order */}
 
-      {summary && (
-        <Section
-          title={sectionsTitle[0]?.name || "PROFESSIONAL SUMMARY"}
-          color={color}
-        >
-          <p className="text-[13.5px] leading-5.5 -my-2" style={{ color }}>
-            {summary}
-          </p>
-        </Section>
-      )}
-
-      {/* Experience */}
-
-      {experience.length > 0 && (
-        <Section title={sectionsTitle[1]?.name || "EXPERIENCE"} color={color}>
-          <div className="space-y-2">
-            {experience.map((item) => (
-              <div key={item.id} className="grid grid-cols-[155px_1fr] gap-5">
-                <div className="text-[13px] text-[#858585]">
-                  {item.startDate}
-
-                  {item.endDate && ` - ${item.endDate}`}
-
-                  {!item.endDate && item.startDate && " - Present"}
-                </div>
-
-                <div className="text-[13.5px] leading-[19px]">
-                  <h3 className="font-bold">{item.jobTitle}</h3>
-
-                  {item.company && (
-                    <p className="text-[#999]">{item.company}</p>
-                  )}
-
-                  {item.points.length > 0 && (
-                    <ul className="mt-1 list-disc space-y-[1px] pl-4">
-                      {item.points.map((point, index) => (
-                        <li key={index}>{point}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* Education */}
-
-      {education.length > 0 && (
-        <Section title={sectionsTitle[2]?.name || "EDUCATION"} color={color}>
-          <div className="space-y-2">
-            {education.map((item) => (
-              <div key={item.id} className="grid grid-cols-[155px_1fr] gap-5">
-                <div className="text-[13px] text-[#858585]">
-                  {item.startDate}
-
-                  {item.endDate && ` - ${item.endDate}`}
-
-                  {!item.endDate && item.startDate && " - Present"}
-                </div>
-
-                <div className="text-[13.5px] leading-[19px]">
-                  <h3 className="font-bold">{item.degree}</h3>
-
-                  {item.institution && (
-                    <p className="text-[#999]">{item.institution}</p>
-                  )}
-
-                  {item.points.length > 0 && (
-                    <ul className="list-disc pl-4">
-                      {item.points.map((point, index) => (
-                        <li key={index}>{point}</li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {item.gpa && <p>GPA: {item.gpa}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* Projects */}
-
-      {projects.length > 0 && (
-        <Section title={sectionsTitle[3]?.name || "PROJECTS"} color={color}>
-          <div className="space-y-3">
-            {projects.map((project) => (
-              <article
-                key={project.id}
-                className="grid grid-cols-[155px_1fr] gap-5"
-              >
-                <div className="text-[13px] text-[#858585]">
-                  {project.startDate}
-
-                  {project.endDate && ` - ${project.endDate}`}
-
-                  {!project.endDate && project.startDate && " - Present"}
-                </div>
-
-                <div className="text-[13.5px] leading-[19px]">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">{project.name}</h3>
-
-                    {project.url && (
-                      <a
-                        href={
-                          project.url.startsWith("http")
-                            ? project.url
-                            : `https://${project.url}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[12px] hover:underline"
-                        style={{ color }}
-                      >
-                        View Project
-                      </a>
-                    )}
-                  </div>
-
-                  {project.description && (
-                    <p className="mt-1">{project.description}</p>
-                  )}
-
-                  {project.technologies.length > 0 && (
-                    <p className="mt-1 text-[13px]">
-                      <strong>Technologies:</strong>{" "}
-                      {project.technologies.join(", ")}
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      {/* Skills */}
-
-      {skills.length > 0 && (
-        <Section title={sectionsTitle[4]?.name || "SKILLS"} color={color}>
-          <ul className="ml-4 grid grid-cols-4 gap-x-12">
-            {skills.map((skill) => (
-              <li key={skill.id} className="list-disc text-[13.5px]">
-                {skill.name}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
+      <OrderedSections order={order} blocks={blocks} />
 
       {/* More Sections */}
 

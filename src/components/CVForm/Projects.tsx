@@ -1,21 +1,22 @@
 "use client";
 
-import { addProject, SectionName } from "@/lib/features/resumeSlice";
-import { RootState } from "@/lib/store";
+import * as React from "react";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import { RootState } from "@/lib/store";
+import { addProject } from "@/lib/features/resumeSlice";
 import ProjectItem from "./ProjectItem";
+import { FaPlus } from "react-icons/fa";
+import { SortableProvider } from "../dnd/SortableProvider";
+import { SortableItem } from "../dnd/SortableItem";
 
 export default function Projects({
   inputClasses,
-  section,
   children,
 }: {
   inputClasses: string;
-  section: SectionName;
   children: React.ReactNode;
 }) {
   const state = useSelector((state: RootState) => state.resume);
@@ -37,45 +38,57 @@ export default function Projects({
     );
   }
 
+  const projectIds = state.projects.map((project) => project.id);
+
+  const handleReorder = (newOrder: string[]) => {
+    const newProjects = newOrder.map((id) =>
+      state.projects.find((project) => project.id === id),
+    ).filter(Boolean);
+
+    dispatch({
+      type: "resume/setProjects",
+      payload: newProjects,
+    });
+  };
+
   return (
     <div>
       <div
-        className={`mt-4 overflow-hidden rounded-md border border-[#C3C6D7] shadow-lg
-          shadow-gray-300/45 transition-all ${
-            showProjects ? "max-h-dvh" : "max-h-11"
-          }`}
+        className={`mt-4 overflow-hidden rounded-lg border border-border shadow-sm transition-all ${
+          showProjects ? "max-h-dvh" : "max-h-11"
+        }`}
       >
-        <div className="flex items-center justify-between border-b border-b-[#C3C6D7] bg-[#F8F9FF] px-4 py-2">
+        <div className="flex items-center justify-between border-b border-border bg-background px-4 py-2">
           {children}
 
           <button
-            type="button"
             className={`cursor-pointer transition-all ${
               !showProjects && "rotate-180"
             }`}
             onClick={() => setShowProjects(!showProjects)}
           >
-            <IoIosArrowDown size={25} />
+            <IoIosArrowDown className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="bg-white p-4">
-          {state.projects.map((project) => (
-            <ProjectItem
-              key={project.id}
-              project={project}
-              inputClasses={inputClasses}
-            />
-          ))}
+        <div className="bg-surface p-4">
+          <SortableProvider items={projectIds} onReorder={handleReorder}>
+            {state.projects.map((project) => (
+              <SortableItem key={project.id} id={project.id}>
+                <ProjectItem
+                  key={project.id}
+                  project={project}
+                  inputClasses={inputClasses}
+                />
+              </SortableItem>
+            ))}
+          </SortableProvider>
 
           <button
-            type="button"
-            className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2
-              rounded-sm border-2 border-dashed border-[#B4C5FF] p-1
-              text-center text-lg font-semibold text-[#004AC6]"
+            className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary-200 p-1 text-center text-lg font-semibold text-primary transition hover:bg-primary-50"
             onClick={createNewProject}
           >
-            <FaPlus size={15} />
+            <FaPlus className="h-4 w-4" />
             Add Project
           </button>
         </div>

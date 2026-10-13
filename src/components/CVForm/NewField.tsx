@@ -5,12 +5,10 @@ import {
   Project,
   updateSection,
   updateSectionBody,
-  updateSectionType,
 } from "@/lib/features/resumeSlice";
 import { useState } from "react";
 import { CgCheck } from "react-icons/cg";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { GoPencil } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { TbTrash } from "react-icons/tb";
 import { useDispatch } from "react-redux";
