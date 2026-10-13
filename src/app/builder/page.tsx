@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "@/lib/hooks";
 import { motion } from "motion/react";
 import { FaFileDownload } from "react-icons/fa";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CVForm from "@/components/builder/CVForm";
 import BuilderHeader from "@/components/builder/BuilderHeader";
 import DownloadSuccess from "@/components/builder/DownloadSuccess";
+import SupportMeModal from "@/components/builder/SupportMeModal";
 import AiAssistant from "@/components/builder/AiAssistant";
 import BuilderSidebar, { SidebarRoute } from "@/components/builder/BuilderSidebar";
 import TemplatePicker from "@/components/builder/TemplatePicker";
@@ -43,8 +45,10 @@ import {
   getActiveGuestCvId,
   setActiveGuestCv,
   updateAuthenticatedCv,
+  createAuthenticatedCv,
   fetchAuthenticatedCv,
 } from "@/lib/persistence";
+import { requestSupportMe } from "@/lib/features/supportMeSlice";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { validateResumeData } from "@/lib/validation";
@@ -104,7 +108,7 @@ const fontMap: Record<
 
 export default function Builder() {
   const resumeData = useSelector((state: RootState) => state.resume);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { data: session } = useSession();
   const user = session?.user;
   const router = useRouter();
@@ -145,6 +149,9 @@ export default function Builder() {
   // Guards autosave while a CV is being loaded. A ref is used deliberately so
   // that flipping it synchronously from the load effect is not a state update.
   const loadingCvRef = useRef(false);
+  // Counts completed saves per mount so the initial hydration autosave
+  // (not a user-driven success) never triggers the Support Me popup.
+  const saveCountRef = useRef(0);
 
   const saveCurrentCv = useCallback(async () => {
     if (loadingCvRef.current) return;
@@ -168,15 +175,12 @@ export default function Builder() {
         // Create new CV
         const newId = crypto.randomUUID();
         if (user) {
-          const res = await fetch("/api/cvs", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: currentCvName, data: resumeData }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            setCurrentCvId(data.id);
-          }
+          // Throws on failure so a failed save never counts as success.
+          const createdId = await createAuthenticatedCv(
+            currentCvName,
+            resumeData,
+          );
+          setCurrentCvId(createdId);
         } else {
           saveGuestCv({
             id: newId,
@@ -191,13 +195,20 @@ export default function Builder() {
         }
       }
       setSaveStatus("saved");
+      // Success-only trigger: exceptions above skip this entirely.
+      // Suppressed while the download-success dialog is open so two
+      // modals never stack.
+      saveCountRef.current += 1;
+      if (saveCountRef.current > 1 && !downloaded) {
+        dispatch(requestSupportMe("save"));
+      }
     } catch (error) {
       console.error("Save failed:", error);
       setSaveStatus("error");
     } finally {
       setSaving(false);
     }
-  }, [user, currentCvId, currentCvName, resumeData]);
+  }, [user, currentCvId, currentCvName, resumeData, dispatch, downloaded]);
 
   // Load CV from URL param (authenticated) or the active guest CV
   useEffect(() => {
@@ -380,6 +391,19 @@ export default function Builder() {
     router.push("/builder");
   };
 
+  // Panel navigation. Returning to the Editor panel counts as the
+  // "go back to the previous editing step" trigger (the project has no
+  // undo handler, so this is the closest existing back action).
+  const handleSidebarChange = useCallback(
+    (route: SidebarRoute) => {
+      setSidebarRoute(route);
+      if (route === "editor") {
+        dispatch(requestSupportMe("back"));
+      }
+    },
+    [dispatch],
+  );
+
   return (
     <main className="flex h-dvh w-full flex-col overflow-hidden bg-background xl:flex-row">
       {/* ================= MOBILE NAV ================= */}
@@ -388,7 +412,7 @@ export default function Builder() {
           <button
             key={route}
             onClick={() => {
-              setSidebarRoute(route);
+              handleSidebarChange(route);
               setShowForm(true);
             }}
             className={`flex-1 py-2.5 text-xs font-medium transition-colors cursor-pointer ${
@@ -406,7 +430,7 @@ export default function Builder() {
 
       {/* ================= SIDEBAR ================= */}
       <div className="hidden xl:flex">
-        <BuilderSidebar active={sidebarRoute} onChange={setSidebarRoute} />
+        <BuilderSidebar active={sidebarRoute} onChange={handleSidebarChange} />
       </div>
 
       {/* ================= CONTENT PANEL ================= */}
@@ -480,6 +504,9 @@ export default function Builder() {
 
       {/* ================= DOWNLOAD SUCCESS ================= */}
       <DownloadSuccess open={downloaded} onClose={() => setDownloaded(false)} />
+
+      {/* ================= SUPPORT ME (single instance) ================= */}
+      <SupportMeModal />
 
       {/* ================= PREVIEW ================= */}
       <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">

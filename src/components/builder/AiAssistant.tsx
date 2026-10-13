@@ -39,6 +39,7 @@ import {
 } from "@/lib/features/resumeSlice";
 import { v4 as uuidv4 } from "uuid";
 import { useAppDispatch } from "@/lib/hooks";
+import { requestSupportMe } from "@/lib/features/supportMeSlice";
 
 type AiType =
   | "summary"
@@ -175,6 +176,8 @@ export default function AiAssistant() {
         applyTextResult(activeTab, text);
         setResult(text || "Generated content");
       }
+      // Success-only trigger: any failure above throws and skips this.
+      dispatch(requestSupportMe("generate"));
     } catch (err) {
       const message = err instanceof Error ? err.message : "Generation failed";
       setError(message);
