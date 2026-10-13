@@ -1,36 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Now CV — Professional CV Builder
+
+A production-ready CV builder with authentication, database persistence, AI-powered CV generation, drag-and-drop editing, and PDF export.
+
+## Features
+
+- **Authentication**: Secure sign-up and sign-in with NextAuth.js (Credentials provider + JWT sessions)
+- **Database Persistence**: SQLite database for authenticated users
+- **Guest Mode**: Full CV editing with localStorage persistence
+- **AI Assistant**: Gemini AI-powered CV content generation
+- **Drag-and-Drop**: Reorder sections and entries with dnd-kit
+- **PDF Export**: High-quality PDF generation with Puppeteer
+- **Templates**: 7 professional CV templates
+- **Responsive**: Works on desktop, tablet, and mobile
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+
+- `AUTH_SECRET` / `NEXTAUTH_SECRET` — Secret used by NextAuth.js to sign session JWTs. Generate with:
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+  ```
+- `NEXTAUTH_URL` — The canonical URL of the app (e.g. `http://localhost:3000`)
+- `GEMINI_API_KEY` — Google Gemini API key for AI features (from https://aistudio.google.com)
+
+### Database Setup
+
+The SQLite database is created automatically on first run. No manual migration is needed.
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+### Guest Mode
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Visit the landing page and click "Continue as Guest" or "Create CV"
+2. Build your CV with full editing capabilities
+3. Your CV is automatically saved to localStorage
+4. Export as PDF anytime
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authenticated Mode
 
-## Deploy on Vercel
+1. Sign up for an account or sign in
+2. Create, edit, and manage multiple CVs
+3. Your CVs are saved to the database
+4. Import guest CVs when you create an account
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### AI Assistant
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Open the builder and click the "AI" button
+2. Choose an AI action (summary, improve, experience, extract, tailor, complete, ATS)
+3. Provide your information and click "Generate"
+4. AI content is automatically applied to your CV
+
+### Drag-and-Drop
+
+- Drag sections to reorder them
+- Drag experience, education, and project entries to reorder
+- Drag handles appear on hover
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **React**: 19
+- **State Management**: Redux Toolkit
+- **Styling**: Tailwind CSS 4 + shadcn/ui
+- **Database**: SQLite (better-sqlite3)
+- **Authentication**: NextAuth.js v5 (Credentials provider, JWT strategy) + bcryptjs
+- **AI**: Google Gemini API
+- **PDF**: Puppeteer + @sparticuz/chromium
+- **Drag-and-Drop**: @dnd-kit
+
+## Project Structure
+
+```
+src/
+  auth.ts               # NextAuth.js configuration (Credentials + JWT)
+  proxy.ts              # Route protection (authed pages)
+  app/                    # Next.js App Router
+    (auth)/              # Auth layout (signin, signup)
+    api/                 # API routes
+      auth/              # NextAuth handler + register endpoint
+      cvs/               # CV CRUD endpoints
+      ai/                # AI generation endpoint
+      generate-pdf/      # PDF generation endpoint
+    builder/             # CV builder page
+    dashboard/           # User dashboard
+    settings/            # Account settings
+    page.tsx             # Landing page
+  components/
+    auth/                # Auth components
+    builder/             # Builder components
+    CVForm/              # CV form components
+    dnd/                 # Drag-and-drop components
+    home/                # Landing page components
+    layout/              # Layout components
+    ui/                  # shadcn/ui components
+  lib/
+    features/            # Redux slices
+    persistence.ts       # Persistence abstraction
+    auth.ts              # Auth utilities
+    db.ts                # Database setup
+    validation.ts        # Zod schemas
+  templates/             # CV templates
+```
+
+## API Endpoints
+
+- `GET /api/auth/[...nextauth]` — NextAuth.js handlers (sign in, sign out, session)
+- `POST /api/auth/register` — Create account (credentials, server-side)
+- `GET /api/user` — Get the current user
+- `PATCH /api/user` — Update the current user's profile
+- `GET /api/cvs` — List user CVs
+- `POST /api/cvs` — Create CV
+- `GET /api/cvs/[id]` — Get CV
+- `PATCH /api/cvs/[id]` — Update CV
+- `DELETE /api/cvs/[id]` — Delete CV
+- `POST /api/cvs/import` — Import guest CVs
+- `POST /api/ai/generate` — AI content generation
+- `POST /api/generate-pdf` — PDF generation
