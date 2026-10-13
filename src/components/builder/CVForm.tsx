@@ -208,7 +208,11 @@ export default function CVForm() {
         <PersonalInfo inputClasses={inputClasses} />
 
         {/* Main Sections with Drag and Drop — rendered in sectionOrder */}
-        <SortableProvider items={sectionIds} onReorder={handleSectionReorder}>
+        <SortableProvider
+          id="cv-sections"
+          items={sectionIds}
+          onReorder={handleSectionReorder}
+        >
           {sectionIds.map((sectionId) => {
             const { component: Component, icon: Icon } =
               sectionRegistry[sectionId];

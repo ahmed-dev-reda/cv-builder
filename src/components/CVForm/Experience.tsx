@@ -64,7 +64,7 @@ export default function Experience({
           </button>
         </div>
         <div className="bg-surface p-4">
-          <SortableProvider items={experienceIds} onReorder={handleReorder}>
+          <SortableProvider id="experience-entries" items={experienceIds} onReorder={handleReorder}>
             {state.experience.map((exp) => (
               <SortableItem key={exp.id} id={exp.id}>
                 <ExperienceItem

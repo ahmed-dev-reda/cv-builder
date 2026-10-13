@@ -13,7 +13,12 @@ interface SortableItemProps {
   handleClassName?: string;
 }
 
-export function SortableItem({ id, children, className, handleClassName }: SortableItemProps) {
+export function SortableItem({
+  id,
+  children,
+  className,
+  handleClassName,
+}: SortableItemProps) {
   const {
     attributes,
     listeners,

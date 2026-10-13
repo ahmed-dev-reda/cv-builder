@@ -65,7 +65,7 @@ export default function Education({
           </button>
         </div>
         <div className="bg-surface p-4">
-          <SortableProvider items={educationIds} onReorder={handleReorder}>
+          <SortableProvider id="education-entries" items={educationIds} onReorder={handleReorder}>
             {state.education.map((edu) => (
               <SortableItem key={edu.id} id={edu.id}>
                 <EducationItem edu={edu} inputClasses={inputClasses} />

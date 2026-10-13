@@ -72,7 +72,7 @@ export default function Projects({
         </div>
 
         <div className="bg-surface p-4">
-          <SortableProvider items={projectIds} onReorder={handleReorder}>
+          <SortableProvider id="project-entries" items={projectIds} onReorder={handleReorder}>
             {state.projects.map((project) => (
               <SortableItem key={project.id} id={project.id}>
                 <ProjectItem

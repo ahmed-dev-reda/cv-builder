@@ -19,12 +19,17 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 interface SortableProviderProps {
+  // Stable identifier for the dnd-kit context. Required for SSR:
+  // without it dnd-kit auto-generates counter-based aria IDs that
+  // differ between server and client, causing hydration mismatches.
+  id?: string;
   items: string[];
   onReorder: (newOrder: string[]) => void;
   children: React.ReactNode;
 }
 
-export function SortableProvider({ items, onReorder, children }: SortableProviderProps) {
+export function SortableProvider({ id, items, onReorder, children }: SortableProviderProps) {
+  const fallbackId = React.useId();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -48,6 +53,7 @@ export function SortableProvider({ items, onReorder, children }: SortableProvide
 
   return (
     <DndContext
+      id={id ?? fallbackId}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
