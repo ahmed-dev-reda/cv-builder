@@ -21,9 +21,12 @@ interface BuilderSidebarProps {
   onChange: (route: SidebarRoute) => void;
 }
 
-export default function BuilderSidebar({ active, onChange }: BuilderSidebarProps) {
+export default function BuilderSidebar({
+  active,
+  onChange,
+}: BuilderSidebarProps) {
   return (
-    <aside className="flex w-14 shrink-0 flex-col items-center gap-1 border-r border-border bg-surface py-3 sm:w-16">
+    <aside className="flex px-2 shrink-0 flex-col items-center gap-1 border-r border-border bg-surface py-3 sm:w-26">
       {routes.map((route) => {
         const Icon = route.icon;
         const isActive = active === route.id;
@@ -34,7 +37,7 @@ export default function BuilderSidebar({ active, onChange }: BuilderSidebarProps
             onClick={() => onChange(route.id)}
             title={route.label}
             className={cn(
-              "group flex w-11 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium transition-all cursor-pointer",
+              "group flex w-full text-nowrap  flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium transition-all cursor-pointer",
               isActive
                 ? "bg-primary/10 text-primary"
                 : "text-muted hover:bg-gray-50 hover:text-foreground",
@@ -43,7 +46,9 @@ export default function BuilderSidebar({ active, onChange }: BuilderSidebarProps
             <Icon
               className={cn(
                 "h-5 w-5 transition-colors",
-                isActive ? "text-primary" : "text-muted group-hover:text-foreground",
+                isActive
+                  ? "text-primary"
+                  : "text-muted group-hover:text-foreground",
               )}
             />
             <span className="leading-tight">{route.label}</span>
