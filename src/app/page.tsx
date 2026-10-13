@@ -1,10 +1,7 @@
-import Features from "@/components/home/Features";
-import Footer from "@/components/home/Footer";
-import Header from "@/components/home/Header";
+import AppHeader from "@/components/layout/app-header";
+import { FeaturesSection, StepsSection, TemplatesSection, StatsSection } from "@/components/home";
+import { Footer } from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
-import Stats from "@/components/home/Stats";
-import Steps from "@/components/home/Steps";
-import Templates from "@/components/home/Templates";
 import HydrationLoader from "@/components/HydrationLoader";
 import type { Metadata } from "next";
 
@@ -16,11 +13,12 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 };
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Now CV",
-  url: "https://now-cv.com",
+  url: "https://nowcv.com",
   description:
     "Online CV and resume builder for creating professional resumes.",
   applicationCategory: "BusinessApplication",
@@ -30,13 +28,13 @@ const jsonLd = {
 export default function Home() {
   return (
     <HydrationLoader>
-      <main className="min-h-screen bg-[#F8F9FF] text-[#171923] overflow-auto">
-        <Header />
+      <main className="min-h-screen bg-background text-foreground overflow-auto">
+        <AppHeader />
         <Hero />
-        <Stats />
-        <Features />
-        <Steps />
-        <Templates />
+        <StatsSection />
+        <FeaturesSection />
+        <StepsSection />
+        <TemplatesSection />
         <Footer />
         <script
           type="application/ld+json"
