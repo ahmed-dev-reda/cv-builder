@@ -1,13 +1,71 @@
 @import "tailwindcss";
 
+@theme {
+  /* Design tokens based on design.md - Resume.com inspired */
+  --color-primary: #0D47A1;
+  --color-primary-light: #1355b8;
+  --color-primary-dark: #093575;
+  --color-primary-50: #E8F0FE;
+  --color-primary-100: #C7DAFA;
+  --color-primary-200: #B4C5FF;
+
+  --color-background: #F8F9FF;
+  --color-surface: #FFFFFF;
+  --color-foreground: #171923;
+
+  --color-muted: #6b7280;
+  --color-muted-light: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-focus: #0D47A1;
+
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--font-open-sans);
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Swiper custom styles */
 .templates-slider .swiper-button-next,
 .templates-slider .swiper-button-prev {
   width: 44px;
@@ -16,11 +74,14 @@ body {
   background: white;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+.templates-slider .swiper-button-next::after,
+.templates-slider .swiper-button-prev::after {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0D47A1;
 }
 
 .font-times-new-roman {
