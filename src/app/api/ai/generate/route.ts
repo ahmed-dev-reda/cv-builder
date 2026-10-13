@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
             projects: { id: 4, name: "Projects" },
             skills: { id: 5, name: "Skills" },
           },
-          sectionOrder: ["summary", "experience", "education", "projects", "skills"],
+          sectionOrder: ["summary", "experience", "education", "projects"],
           personalInfo: parsedData.personalInfo || {},
           summary: parsedData.summary || "",
           experience: (parsedData.experience || []).map(

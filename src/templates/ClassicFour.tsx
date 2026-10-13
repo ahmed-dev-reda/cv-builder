@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function ClassicFour() {
@@ -24,7 +24,7 @@ export default function ClassicFour() {
 
   const order = getSectionOrder(resume);
 
-  const blocks: Record<SectionId, React.ReactNode> = {
+  const blocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: summary ? (
       <Section
         title={sectionsTitle.summary?.name || "PROFESSIONAL SUMMARY"}
@@ -199,7 +199,11 @@ export default function ClassicFour() {
       </Section>
     ) : null,
 
-    skills: skills.length > 0 ? (
+  };
+
+  // Skills is fixed (always last) and excluded from drag-and-drop ordering.
+  const skillsBlock =
+    skills.length > 0 ? (
       <Section title={sectionsTitle.skills?.name || "SKILLS"} color={color}>
         <div className="text-[14px] leading-5">
           <p>
@@ -214,8 +218,7 @@ export default function ClassicFour() {
           </p>
         </div>
       </Section>
-    ) : null,
-  };
+    ) : null;
 
   return (
     <div
@@ -291,6 +294,9 @@ export default function ClassicFour() {
       {/* ================= ORDERED SECTIONS ================= */}
 
       <OrderedSections order={order} blocks={blocks} />
+
+      {/* Skills — fixed last, excluded from ordering */}
+      {skillsBlock}
 
       {/* ================= ADDITIONAL SECTIONS ================= */}
 

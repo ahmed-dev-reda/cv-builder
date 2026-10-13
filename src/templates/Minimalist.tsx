@@ -3,7 +3,7 @@
 import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 const isEmpty = (value?: string) => !value?.trim();
@@ -21,7 +21,7 @@ export default function Minimalist() {
   const color = resumeData.color;
   const order = getSectionOrder(resumeData);
 
-  const blocks: Record<SectionId, React.ReactNode> = {
+  const blocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: resumeData.summary ? (
       <div>
         <h3 className="text-[20px] font-bold uppercase" style={{ color }}>
@@ -195,7 +195,11 @@ export default function Minimalist() {
       </div>
     ) : null,
 
-    skills: resumeData.skills.length > 0 ? (
+  };
+
+  // Skills is fixed (always last) and excluded from drag-and-drop ordering.
+  const skillsBlock =
+    resumeData.skills.length > 0 ? (
       <div>
         <h3 className="text-[20px] font-bold uppercase" style={{ color }}>
           {resumeData.sectionsTitle.skills?.name || "Skills"}
@@ -209,8 +213,7 @@ export default function Minimalist() {
           ))}
         </ul>
       </div>
-    ) : null,
-  };
+    ) : null;
 
   return (
     <div
@@ -287,6 +290,9 @@ export default function Minimalist() {
       {/* Ordered sections */}
 
       <OrderedSections order={order} blocks={blocks} />
+
+      {/* Skills — fixed last, excluded from ordering */}
+      {skillsBlock}
 
       {/* More Sections */}
 

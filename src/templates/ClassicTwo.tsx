@@ -3,7 +3,7 @@
 import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function ClassicTwo() {
@@ -13,7 +13,7 @@ export default function ClassicTwo() {
 
   const { personalInfo } = resumeData;
 
-  const blocks: Record<SectionId, React.ReactNode> = {
+  const blocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: resumeData.summary ? (
       <section className="mt-2">
         <SectionHeading
@@ -191,7 +191,11 @@ export default function ClassicTwo() {
       </section>
     ) : null,
 
-    skills: resumeData.skills.length > 0 ? (
+  };
+
+  // Skills is fixed (always last) and excluded from drag-and-drop ordering.
+  const skillsBlock =
+    resumeData.skills.length > 0 ? (
       <section className="mt-2">
         <SectionHeading
           title={resumeData.sectionsTitle.skills?.name || "Skills"}
@@ -210,8 +214,7 @@ export default function ClassicTwo() {
           ))}
         </p>
       </section>
-    ) : null,
-  };
+    ) : null;
 
   return (
     <div
@@ -272,6 +275,9 @@ export default function ClassicTwo() {
       {/* ==================== Ordered sections ==================== */}
 
       <OrderedSections order={order} blocks={blocks} />
+
+      {/* Skills — fixed last, excluded from ordering */}
+      {skillsBlock}
 
       {/* ==================== Additional Sections ==================== */}
 

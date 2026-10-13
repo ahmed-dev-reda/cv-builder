@@ -62,7 +62,16 @@ export type SectionName = {
 };
 
 // Stable section identifiers — these never change, only their order does
-export type SectionId = "summary" | "experience" | "education" | "projects" | "skills";
+export type SectionId =
+  | "summary"
+  | "experience"
+  | "education"
+  | "projects"
+  | "skills";
+
+// Sections that participate in drag-and-drop ordering.
+// Skills is fixed (always rendered last) and excluded from reordering.
+export type OrderableSectionId = Exclude<SectionId, "skills">;
 
 export type CVPage = {
   id: number;
@@ -114,7 +123,7 @@ const initialState: ResumeState = {
   },
 
   // The order in which sections appear — this is what DnD reorders
-  sectionOrder: ["summary", "experience", "education", "projects", "skills"],
+  sectionOrder: ["summary", "experience", "education", "projects"],
 
   font: "inter",
 };
@@ -127,7 +136,7 @@ export type ResumeState = {
   color: string;
 
   sectionsTitle: Record<SectionId, SectionName>;
-  sectionOrder: SectionId[];
+  sectionOrder: OrderableSectionId[];
 
   personalInfo: {
     fullName: string;
@@ -186,7 +195,7 @@ const resumeSlice = createSlice({
     // Section Order — the source of truth for DnD reordering
     // --------------------------------
 
-    setSectionOrder: (state, action: PayloadAction<SectionId[]>) => {
+    setSectionOrder: (state, action: PayloadAction<OrderableSectionId[]>) => {
       state.sectionOrder = action.payload;
     },
 

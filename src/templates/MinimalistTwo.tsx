@@ -3,7 +3,7 @@
 import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function MinimalistTwo() {
@@ -23,11 +23,9 @@ export default function MinimalistTwo() {
 
   // Main-column sections follow the editor's drag-and-drop order.
   // Skills + additional sections live in the fixed sidebar by design.
-  const mainOrder = getSectionOrder(resumeData).filter(
-    (id) => id !== "skills",
-  );
+  const mainOrder = getSectionOrder(resumeData);
 
-  const mainBlocks: Record<SectionId, React.ReactNode> = {
+  const mainBlocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: summary ? (
       <section>
         <MainTitle
@@ -211,8 +209,6 @@ export default function MinimalistTwo() {
         </div>
       </section>
     ) : null,
-
-    skills: null,
   };
 
   return (

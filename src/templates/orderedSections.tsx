@@ -1,15 +1,14 @@
 import * as React from "react";
-import type { ResumeState, SectionId } from "@/lib/features/resumeSlice";
+import type { ResumeState, OrderableSectionId } from "@/lib/features/resumeSlice";
 
-export const DEFAULT_SECTION_ORDER: SectionId[] = [
+export const DEFAULT_SECTION_ORDER: OrderableSectionId[] = [
   "summary",
   "experience",
   "education",
   "projects",
-  "skills",
 ];
 
-function isSectionId(value: unknown): value is SectionId {
+function isOrderableSectionId(value: unknown): value is OrderableSectionId {
   return (
     typeof value === "string" &&
     (DEFAULT_SECTION_ORDER as string[]).includes(value)
@@ -18,17 +17,18 @@ function isSectionId(value: unknown): value is SectionId {
 
 /**
  * Returns the user-defined section order, falling back to the canonical
- * order for legacy CV data saved before reordering existed.
+ * order for legacy CV data. Orders saved before skills was removed from
+ * ordering still contain "skills" — it is stripped here.
  */
-export function getSectionOrder(state: Pick<ResumeState, "sectionOrder">): SectionId[] {
+export function getSectionOrder(state: Pick<ResumeState, "sectionOrder">): OrderableSectionId[] {
   const order = (state as { sectionOrder?: unknown }).sectionOrder;
+  if (!Array.isArray(order)) return DEFAULT_SECTION_ORDER;
+  const stripped = (order as unknown[]).filter(isOrderableSectionId);
   if (
-    Array.isArray(order) &&
-    order.length === DEFAULT_SECTION_ORDER.length &&
-    order.every(isSectionId) &&
-    new Set(order).size === DEFAULT_SECTION_ORDER.length
+    stripped.length === DEFAULT_SECTION_ORDER.length &&
+    new Set(stripped).size === DEFAULT_SECTION_ORDER.length
   ) {
-    return order as SectionId[];
+    return stripped;
   }
   return DEFAULT_SECTION_ORDER;
 }
@@ -36,13 +36,14 @@ export function getSectionOrder(state: Pick<ResumeState, "sectionOrder">): Secti
 /**
  * Renders complete section blocks in the given order with stable keys.
  * Every template uses this so editor, preview, and PDF share one order.
+ * Skills is fixed (rendered last by each template) and not part of the order.
  */
 export function OrderedSections({
   order,
   blocks,
 }: {
-  order: SectionId[];
-  blocks: Record<SectionId, React.ReactNode>;
+  order: OrderableSectionId[];
+  blocks: Record<OrderableSectionId, React.ReactNode>;
 }) {
   return (
     <>

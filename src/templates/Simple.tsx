@@ -3,7 +3,7 @@
 import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function Simple() {
@@ -23,7 +23,7 @@ export default function Simple() {
 
   const order = getSectionOrder(resumeData);
 
-  const blocks: Record<SectionId, React.ReactNode> = {
+  const blocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: summary ? (
       <div>
         <div
@@ -199,8 +199,13 @@ export default function Simple() {
         ))}
       </div>
     ) : null,
+  };
 
-    skills: skills.length > 0 || moreSections.length > 0 ? (
+  // Skills is fixed (always last) and excluded from drag-and-drop ordering.
+  // More sections stay bundled here, preserving the previous layout where
+  // they rendered at the skills position.
+  const skillsBlock =
+    skills.length > 0 || moreSections.length > 0 ? (
       <div>
         <h2
           className="my-2 text-xl font-semibold uppercase"
@@ -251,8 +256,7 @@ export default function Simple() {
           );
         })}
       </div>
-    ) : null,
-  };
+    ) : null;
 
   return (
     <div
@@ -326,6 +330,9 @@ export default function Simple() {
       {/* ================================= */}
 
       <OrderedSections order={order} blocks={blocks} />
+
+      {/* Skills — fixed last, excluded from ordering */}
+      {skillsBlock}
     </div>
   );
 }

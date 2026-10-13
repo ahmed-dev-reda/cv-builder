@@ -8,6 +8,7 @@ import {
   Single,
   SectionName,
   SectionId,
+  OrderableSectionId,
 } from "./features/resumeSlice";
 
 // --- Schemas matching the existing CV data model ---
@@ -68,6 +69,13 @@ export const SectionIdSchema: z.ZodType<SectionId> = z.enum([
   "skills",
 ]);
 
+export const OrderableSectionIdSchema: z.ZodType<OrderableSectionId> = z.enum([
+  "summary",
+  "experience",
+  "education",
+  "projects",
+]);
+
 export const SectionBodySchema = z.union([SingleSchema, ProjectSchema]);
 
 export const NewSectionSchema: z.ZodType<NewSection> = z.object({
@@ -90,7 +98,7 @@ export const TemplateSchema = z.enum([
 export const ResumeStateSchema: z.ZodType<ResumeState> = z.object({
   color: z.string(),
   sectionsTitle: z.record(SectionIdSchema, SectionNameSchema),
-  sectionOrder: z.array(SectionIdSchema).length(5),
+  sectionOrder: z.array(OrderableSectionIdSchema).length(4),
   personalInfo: PersonalInfoSchema,
   summary: z.string(),
   experience: z.array(ExperienceSchema),
@@ -159,15 +167,14 @@ const DEFAULT_SECTIONS_TITLE: Record<SectionId, SectionName> = {
   skills: { id: 5, name: "Skills" },
 };
 
-const DEFAULT_SECTION_ORDER: SectionId[] = [
+const DEFAULT_SECTION_ORDER: OrderableSectionId[] = [
   "summary",
   "experience",
   "education",
   "projects",
-  "skills",
 ];
 
-function isSectionId(value: unknown): value is SectionId {
+function isOrderableSectionId(value: unknown): value is OrderableSectionId {
   return typeof value === "string" && (DEFAULT_SECTION_ORDER as string[]).includes(value);
 }
 
@@ -193,13 +200,18 @@ export function normalizeResumeState(input: unknown): unknown {
     data.sectionsTitle = { ...DEFAULT_SECTIONS_TITLE, ...migrated };
   }
 
+  // Legacy orders saved before skills was removed from ordering
+  // still contain "skills" — strip it, then validate the remaining 4.
+  const strippedOrder = Array.isArray(data.sectionOrder)
+    ? (data.sectionOrder as unknown[]).filter(isOrderableSectionId)
+    : [];
   if (
-    !Array.isArray(data.sectionOrder) ||
-    data.sectionOrder.length !== DEFAULT_SECTION_ORDER.length ||
-    !(data.sectionOrder as unknown[]).every(isSectionId) ||
-    new Set(data.sectionOrder as unknown[]).size !== DEFAULT_SECTION_ORDER.length
+    strippedOrder.length !== DEFAULT_SECTION_ORDER.length ||
+    new Set(strippedOrder).size !== DEFAULT_SECTION_ORDER.length
   ) {
     data.sectionOrder = [...DEFAULT_SECTION_ORDER];
+  } else {
+    data.sectionOrder = strippedOrder;
   }
 
   return data;

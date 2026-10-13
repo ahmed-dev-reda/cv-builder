@@ -30,18 +30,18 @@ import { SortableProvider } from "../dnd/SortableProvider";
 import { SortableItem } from "../dnd/SortableItem";
 import type { IconType } from "react-icons";
 
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 
-// Section registry — maps stable section IDs to their components and icons
+// Section registry — maps stable section IDs to their components and icons.
+// Skills is fixed (always last) and excluded from drag-and-drop ordering.
 const sectionRegistry: Record<
-  SectionId,
+  OrderableSectionId,
   { component: React.ElementType; icon: IconType }
 > = {
   summary: { component: Summary, icon: AiOutlineAlignLeft },
   experience: { component: Experience, icon: LuBriefcaseBusiness },
   education: { component: Education, icon: SlGraduation },
   projects: { component: Projects, icon: LuFolderKanban },
-  skills: { component: Skills, icon: LuBrain },
 };
 
 export default function CVForm() {
@@ -185,7 +185,7 @@ export default function CVForm() {
 
   const handleSectionReorder = useCallback(
     (newOrder: string[]) => {
-      dispatch(setSectionOrder(newOrder as SectionId[]));
+      dispatch(setSectionOrder(newOrder as OrderableSectionId[]));
     },
     [dispatch],
   );
@@ -210,7 +210,8 @@ export default function CVForm() {
         {/* Main Sections with Drag and Drop — rendered in sectionOrder */}
         <SortableProvider items={sectionIds} onReorder={handleSectionReorder}>
           {sectionIds.map((sectionId) => {
-            const { component: Component, icon: Icon } = sectionRegistry[sectionId];
+            const { component: Component, icon: Icon } =
+              sectionRegistry[sectionId];
 
             return (
               <SortableItem key={sectionId} id={sectionId}>
@@ -225,6 +226,16 @@ export default function CVForm() {
             );
           })}
         </SortableProvider>
+
+        {/* Skills — fixed position (always last), excluded from ordering */}
+
+        <Skills>
+          <SectionTitle
+            sectionId="skills"
+            section={state.sectionsTitle.skills}
+            Icon={LuBrain}
+          />
+        </Skills>
 
         {/* Added Additional Sections */}
         <MoreSections />

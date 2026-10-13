@@ -3,7 +3,7 @@
 import * as React from "react";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import type { SectionId } from "@/lib/features/resumeSlice";
+import type { OrderableSectionId } from "@/lib/features/resumeSlice";
 import { OrderedSections, getSectionOrder } from "./orderedSections";
 
 export default function ClassicOne() {
@@ -11,7 +11,7 @@ export default function ClassicOne() {
   const color = resumeData.color;
   const order = getSectionOrder(resumeData);
 
-  const blocks: Record<SectionId, React.ReactNode> = {
+  const blocks: Record<OrderableSectionId, React.ReactNode> = {
     summary: resumeData.summary ? (
       <div className="mt-4">
         <h2 className="text-xl font-semibold uppercase" style={{ color }}>
@@ -190,7 +190,11 @@ export default function ClassicOne() {
       </div>
     ) : null,
 
-    skills: resumeData.skills.length > 0 ? (
+  };
+
+  // Skills is fixed (always last) and excluded from drag-and-drop ordering.
+  const skillsBlock =
+    resumeData.skills.length > 0 ? (
       <div>
         <h2
           className="mt-2 text-xl font-semibold uppercase"
@@ -211,8 +215,7 @@ export default function ClassicOne() {
           </li>
         </ul>
       </div>
-    ) : null,
-  };
+    ) : null;
 
   return (
     <div
@@ -288,6 +291,9 @@ export default function ClassicOne() {
       {/* Ordered sections — follows the editor's drag-and-drop order */}
 
       <OrderedSections order={order} blocks={blocks} />
+
+      {/* Skills — fixed last, excluded from ordering */}
+      {skillsBlock}
 
       {/* Additional Sections */}
 
