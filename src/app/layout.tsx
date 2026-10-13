@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Open_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
+import { AuthProvider } from "@/components/auth/auth-provider";
+import { Toaster } from "sonner";
 import favicon from "./favicon.png";
 
 const openSans = Open_Sans({
@@ -38,22 +40,6 @@ export const metadata: Metadata = {
     title: "Now CV - Free Online CV & Resume Builder",
     description:
       "Create a professional CV online with modern resume templates and download your CV as a PDF.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Now CV - Online CV Builder",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Now CV - Free Online CV & Resume Builder",
-    description:
-      "Create and customize your professional CV online with Now CV.",
-    images: ["/og-image.png"],
   },
 
   robots: {
@@ -73,7 +59,12 @@ export default function RootLayout({
       className={`${openSans.className} ${inter.className} h-full antialiased`}
     >
       <body className="flex flex-col">
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <AuthProvider>
+            {children}
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
+        </StoreProvider>
       </body>
     </html>
   );
