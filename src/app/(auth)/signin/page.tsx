@@ -31,7 +31,11 @@ export default function SignInPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError(
+        result.code === "account not found"
+          ? "account not found"
+          : "Invalid email or password",
+      );
     } else {
       const params = new URLSearchParams(window.location.search);
       const callbackUrl = params.get("callbackUrl");

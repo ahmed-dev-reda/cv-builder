@@ -1,6 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { getUserByEmail, verifyPassword } from "@/lib/auth";
+
+// Thrown when the email has no account. The `code` is forwarded to the
+// sign-in page as `?error=CredentialsSignin&code=account not found`
+// (and as `result.code` for `signIn(..., { redirect: false })`).
+class AccountNotFoundError extends CredentialsSignin {
+  code = "account not found";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -17,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await getUserByEmail(credentials.email as string);
-        if (!user) return null;
+        if (!user) throw new AccountNotFoundError();
 
         const valid = await verifyPassword(
           credentials.password as string,
