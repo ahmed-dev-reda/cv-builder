@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image, { StaticImageData } from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
@@ -9,28 +8,47 @@ import { AppDispatch, RootState } from "@/lib/store";
 import { setTemplate, TemplateType } from "@/lib/features/resumeSlice";
 import { cn } from "@/lib/utils";
 
-import simple from "@/thumbnails/simple.jpg";
-import minimalist from "@/thumbnails/minimalist.jpg";
-import classicOne from "@/thumbnails/classic_one.jpg";
-import classicTwo from "@/thumbnails/classic_two.png";
-import minimalistTwo from "@/thumbnails/minimalist_two.png";
-import classicThree from "@/thumbnails/classic_three.png";
-import classicFour from "@/thumbnails/classic_four.png";
+import Simple from "@/templates/Simple";
+import Minimalist from "@/templates/Minimalist";
+import ClassicOne from "@/templates/ClassicOne";
+import ClassicTwo from "@/templates/ClassicTwo";
+import MinimalistTwo from "@/templates/MinimalistTwo";
+import ClassicThree from "@/templates/ClassicThree";
+import ClassicFour from "@/templates/ClassicFour";
 
 const templates: Array<{
   id: TemplateType;
   name: string;
   description: string;
-  image: StaticImageData;
+  Component: React.ElementType;
 }> = [
-  { id: "simple", name: "Simple", description: "Clean and minimal", image: simple },
-  { id: "minimalist", name: "Minimalist", description: "Less is more", image: minimalist },
-  { id: "classicOne", name: "Classic One", description: "Traditional layout", image: classicOne },
-  { id: "classicTwo", name: "Classic Two", description: "Elegant and formal", image: classicTwo },
-  { id: "minimalistTwo", name: "Minimalist Two", description: "Modern minimal", image: minimalistTwo },
-  { id: "classicThree", name: "Classic Three", description: "Professional", image: classicThree },
-  { id: "classicFour", name: "Classic Four", description: "Bold and structured", image: classicFour },
+  { id: "simple", name: "Simple", description: "Clean and minimal", Component: Simple },
+  { id: "minimalist", name: "Minimalist", description: "Less is more", Component: Minimalist },
+  { id: "classicOne", name: "Classic One", description: "Traditional layout", Component: ClassicOne },
+  { id: "classicTwo", name: "Classic Two", description: "Elegant and formal", Component: ClassicTwo },
+  { id: "minimalistTwo", name: "Minimalist Two", description: "Modern minimal", Component: MinimalistTwo },
+  { id: "classicThree", name: "Classic Three", description: "Professional", Component: ClassicThree },
+  { id: "classicFour", name: "Classic Four", description: "Bold and structured", Component: ClassicFour },
 ];
+
+// Card inner width (~200px) relative to the fixed 794px template canvas.
+const MINIATURE_SCALE = 0.25;
+
+function TemplateMiniature({ Component, label }: { Component: React.ElementType; label: string }) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none h-full w-full origin-top-left select-none overflow-hidden bg-white"
+      style={{ width: 794, transform: `scale(${MINIATURE_SCALE})` }}
+    >
+      {/* Live render of the actual template with the current CV data */}
+      <Component />
+      <span className="sr-only">{label} preview</span>
+    </div>
+  );
+}
+
+const MemoMiniature = React.memo(TemplateMiniature);
 
 export default function TemplatePicker() {
   const dispatch = useDispatch<AppDispatch>();
@@ -40,7 +58,7 @@ export default function TemplatePicker() {
     <div className="flex h-full flex-col">
       <div className="border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold text-foreground">Choose a Template</h2>
-        <p className="text-xs text-muted">Select a design for your CV</p>
+        <p className="text-xs text-muted">Live preview with your current CV data</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
@@ -61,6 +79,8 @@ export default function TemplatePicker() {
                 }}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
+                aria-pressed={isActive}
+                aria-label={`Use ${tmpl.name} template`}
                 className={cn(
                   "group relative flex flex-col items-center rounded-lg border-2 p-2 transition-colors cursor-pointer",
                   isActive
@@ -79,20 +99,14 @@ export default function TemplatePicker() {
                   </motion.div>
                 )}
 
-                {/* Template preview thumbnail */}
+                {/* Live template preview thumbnail */}
                 <div
                   className={cn(
                     "mb-2 aspect-4/5 w-full overflow-hidden rounded border border-border bg-white",
                     isActive && "border-primary/30",
                   )}
                 >
-                  <Image
-                    src={tmpl.image}
-                    alt={`${tmpl.name} template preview`}
-                    width={300}
-                    height={375}
-                    className="h-full w-full object-cover object-top"
-                  />
+                  <MemoMiniature Component={tmpl.Component} label={tmpl.name} />
                 </div>
 
                 <span className="text-[11px] font-medium text-foreground">
