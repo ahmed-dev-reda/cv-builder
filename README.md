@@ -5,7 +5,7 @@ A production-ready CV builder with authentication, database persistence, AI-powe
 ## Features
 
 - **Authentication**: Secure sign-up and sign-in with NextAuth.js (Credentials provider + JWT sessions)
-- **Database Persistence**: SQLite database for authenticated users
+- **Database Persistence**: Neon PostgreSQL via Prisma for authenticated users
 - **Guest Mode**: Full CV editing with localStorage persistence
 - **AI Assistant**: Gemini AI-powered CV content generation
 - **Drag-and-Drop**: Reorder sections and entries with dnd-kit
@@ -45,7 +45,13 @@ Required variables:
 
 ### Database Setup
 
-The SQLite database is created automatically on first run. No manual migration is needed.
+The app uses Neon PostgreSQL through Prisma 7 (`prisma/schema.prisma`).
+Set `DATABASE_URL` in `.env`, then sync the schema (creates the
+`users`/`cvs` tables if missing — no data migration needed):
+
+```bash
+npx prisma db push
+```
 
 ### Development
 
@@ -97,7 +103,7 @@ npm start
 - **React**: 19
 - **State Management**: Redux Toolkit
 - **Styling**: Tailwind CSS 4 + shadcn/ui
-- **Database**: SQLite (better-sqlite3)
+- **Database**: Neon PostgreSQL via Prisma 7
 - **Authentication**: NextAuth.js v5 (Credentials provider, JWT strategy) + bcryptjs
 - **AI**: Google Gemini API
 - **PDF**: Puppeteer + @sparticuz/chromium
