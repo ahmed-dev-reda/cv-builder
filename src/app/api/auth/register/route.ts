@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { createUser, getUserByEmail } from "@/lib/auth";
-import { sql, initDb } from "@/lib/db";
+import { prisma } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 import { SignUpSchema } from "@/lib/validation";
 import { createDefaultResumeState } from "@/lib/features/resumeSlice";
 
@@ -32,11 +33,18 @@ export async function POST(request: NextRequest) {
     const user = await createUser(email, password, name);
 
     // Give every new account a default CV so the dashboard is never empty.
-    await initDb();
-    await sql`
-      INSERT INTO cvs (id, user_id, name, data, is_default)
-      VALUES (${uuidv4()}, ${user.id}, 'My CV', ${JSON.stringify(createDefaultResumeState())}::jsonb, TRUE)
-    `;
+    const jsonData = JSON.parse(
+      JSON.stringify(createDefaultResumeState()),
+    ) as Prisma.InputJsonValue;
+    await prisma.cv.create({
+      data: {
+        id: uuidv4(),
+        userId: user.id,
+        name: "My CV",
+        data: jsonData,
+        isDefault: true,
+      },
+    });
 
     return NextResponse.json(
       { user: { id: user.id, email: user.email, name: user.name } },

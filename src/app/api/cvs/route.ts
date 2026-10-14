@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { sql, initDb } from "@/lib/db";
+import { prisma } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 import { SaveCvSchema, validateResumeData } from "@/lib/validation";
 import { v4 as uuidv4 } from "uuid";
 
@@ -13,18 +14,25 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await initDb();
-  const cvs = await sql`
-    SELECT id, name, is_default, created_at, updated_at
-    FROM cvs
-    WHERE user_id = ${session.user.id}
-    ORDER BY updated_at DESC
-  `;
+  const cvs = await prisma.cv.findMany({
+    where: { userId: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      isDefault: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: { updatedAt: "desc" },
+  });
 
   return NextResponse.json({
-    cvs: cvs.map((cv: Record<string, unknown>) => ({
-      ...cv,
-      is_default: Boolean(cv.is_default),
+    cvs: cvs.map((cv) => ({
+      id: cv.id,
+      name: cv.name,
+      is_default: cv.isDefault,
+      created_at: cv.createdAt.toISOString(),
+      updated_at: cv.updatedAt.toISOString(),
     })),
   });
 }
@@ -58,36 +66,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await initDb();
+    const jsonData = JSON.parse(
+      JSON.stringify(validation.data),
+    ) as Prisma.InputJsonValue;
 
     if (id) {
       // Update existing CV - verify ownership
-      const existing = await sql`
-        SELECT user_id FROM cvs WHERE id = ${id}
-      `;
+      const existing = await prisma.cv.findUnique({
+        where: { id },
+        select: { userId: true },
+      });
 
-      if (existing.length === 0) {
+      if (!existing) {
         return NextResponse.json({ error: "CV not found" }, { status: 404 });
       }
 
-      if (existing[0].user_id !== session.user.id) {
+      if (existing.userId !== session.user.id) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
-      await sql`
-        UPDATE cvs
-        SET name = ${name}, data = ${JSON.stringify(validation.data)}::jsonb, updated_at = NOW()
-        WHERE id = ${id}
-      `;
+      await prisma.cv.update({
+        where: { id },
+        data: { name, data: jsonData },
+      });
 
       return NextResponse.json({ id, success: true });
     } else {
       // Create new CV
       const newId = uuidv4();
-      await sql`
-        INSERT INTO cvs (id, user_id, name, data)
-        VALUES (${newId}, ${session.user.id}, ${name}, ${JSON.stringify(validation.data)}::jsonb)
-      `;
+      await prisma.cv.create({
+        data: {
+          id: newId,
+          userId: session.user.id,
+          name,
+          data: jsonData,
+        },
+      });
 
       return NextResponse.json({ id: newId, success: true }, { status: 201 });
     }

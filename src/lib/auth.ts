@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { sql, initDb } from "./db";
+import { prisma } from "./db";
 
 /**
  * User persistence + password hashing helpers.
@@ -30,49 +30,53 @@ export interface User {
   created_at: string;
 }
 
+function toUser(row: {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+}): User {
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    created_at: row.createdAt.toISOString(),
+  };
+}
+
 export async function createUser(
   email: string,
   password: string,
   name: string,
 ): Promise<User> {
-  await initDb();
   const id = uuidv4();
   const hash = bcrypt.hashSync(password, 12);
 
-  await sql`
-    INSERT INTO users (id, email, password_hash, name)
-    VALUES (${id}, ${email.toLowerCase().trim()}, ${hash}, ${name})
-  `;
+  const user = await prisma.user.create({
+    data: { id, email: email.toLowerCase().trim(), passwordHash: hash, name },
+  });
 
-  return {
-    id,
-    email: email.toLowerCase().trim(),
-    name,
-    created_at: new Date().toISOString(),
-  };
+  return toUser(user);
 }
 
 export async function getUserByEmail(
   email: string,
 ): Promise<(User & { password_hash: string }) | null> {
-  await initDb();
-  const rows = await sql`
-    SELECT * FROM users WHERE email = ${email.toLowerCase().trim()}
-  `;
-  return (rows[0] as (User & { password_hash: string }) | undefined) ?? null;
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase().trim() },
+  });
+  if (!user) return null;
+  return { ...toUser(user), password_hash: user.passwordHash };
 }
 
 export async function getUserById(userId: string): Promise<User | null> {
-  await initDb();
-  const rows = await sql`
-    SELECT id, email, name, created_at FROM users WHERE id = ${userId}
-  `;
-  return (rows[0] as User | undefined) ?? null;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, name: true, createdAt: true },
+  });
+  return user ? toUser(user) : null;
 }
 
 export async function updateUserName(userId: string, name: string): Promise<void> {
-  await initDb();
-  await sql`
-    UPDATE users SET name = ${name}, updated_at = NOW() WHERE id = ${userId}
-  `;
+  await prisma.user.update({ where: { id: userId }, data: { name } });
 }

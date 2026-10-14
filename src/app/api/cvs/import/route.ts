@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { sql, initDb } from "@/lib/db";
+import { prisma } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 import { validateResumeData } from "@/lib/validation";
 import { v4 as uuidv4 } from "uuid";
 
@@ -32,7 +33,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await initDb();
     const results: Array<{ name: string; success: boolean; id?: string; error?: string }> = [];
 
     for (const cv of cvs) {
@@ -44,10 +44,17 @@ export async function POST(request: NextRequest) {
         }
 
         const id = uuidv4();
-        await sql`
-          INSERT INTO cvs (id, user_id, name, data)
-          VALUES (${id}, ${session.user.id}, ${cv.name || "Imported CV"}, ${JSON.stringify(validation.data)}::jsonb)
-        `;
+        const jsonData = JSON.parse(
+          JSON.stringify(validation.data),
+        ) as Prisma.InputJsonValue;
+        await prisma.cv.create({
+          data: {
+            id,
+            userId: session.user.id,
+            name: cv.name || "Imported CV",
+            data: jsonData,
+          },
+        });
 
         results.push({ name: cv.name || "Imported CV", success: true, id });
       } catch (err) {
