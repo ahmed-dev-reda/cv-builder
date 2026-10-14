@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
+import GuestMigration from "@/components/builder/GuestMigration";
 import type { CvListItem } from "@/lib/persistence";
 import { toast } from "sonner";
 
@@ -188,6 +189,7 @@ export default function DashboardClient({
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <GuestMigration />
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
