@@ -31,6 +31,18 @@ export async function POST(request: Request) {
       waitUntil: "load",
     });
 
+    // Wait for webfonts (e.g. the injected Google Fonts stylesheet) before
+    // rendering. The timeout race guarantees a font outage can delay but
+    // never fail the export — worst case falls back to system fonts.
+    try {
+      await Promise.race([
+        page.evaluate(() => document.fonts.ready.then(() => true)),
+        new Promise((resolve) => setTimeout(resolve, 8000)),
+      ]);
+    } catch {
+      // Font loading must never break PDF generation.
+    }
+
     await page.emulateMediaType("print");
 
     const pdf = await page.pdf({

@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
 import { ArrowLeft, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -12,13 +11,18 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
 
 export default function BuilderHeader() {
-  const { data: session } = useSession();
+  const user = useAppSelector(selectAuthUser);
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: "/" });
+    // Stay on the builder as a guest — no full-page reload needed.
+    await dispatch(signOutUser());
+    router.refresh();
   };
 
   return (
@@ -36,7 +40,7 @@ export default function BuilderHeader() {
         </span>
       </Link>
 
-      {session?.user ? (
+      {user ? (
         <>
           <Button
             variant="ghost"
@@ -56,18 +60,18 @@ export default function BuilderHeader() {
               >
                 <Avatar
                   fallback={
-                    session.user.name?.charAt(0).toUpperCase() || "?"
+                    user.name?.charAt(0).toUpperCase() || "?"
                   }
                 />
                 <span className="hidden text-sm font-medium md:inline">
-                  {session.user.name}
+                  {user.name}
                 </span>
               </button>
             }
           >
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium">{session.user.name}</p>
-              <p className="text-xs text-muted">{session.user.email}</p>
+              <p className="text-sm font-medium">{user.name}</p>
+              <p className="text-xs text-muted">{user.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push("/dashboard")}>

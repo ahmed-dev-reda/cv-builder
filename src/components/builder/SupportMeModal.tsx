@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
 
 export default function SupportMeModal() {
   const open = useSelector((state: RootState) => state.supportMe.open);
@@ -54,10 +55,20 @@ export default function SupportMeModal() {
       >
         <DialogClose aria-label="Close support dialog" autoFocus />
 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+        >
         <DialogHeader className="items-center">
-          <span className="flex size-14 items-center justify-center rounded-full bg-primary-50">
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.1 }}
+            className="flex size-14 items-center justify-center rounded-full bg-primary-50"
+          >
             <FaHeart className="size-6 text-primary" aria-hidden="true" />
-          </span>
+          </motion.span>
           <DialogTitle id="support-me-title" className="mt-4 text-2xl">
             Support Me ❤️
           </DialogTitle>
@@ -71,10 +82,19 @@ export default function SupportMeModal() {
         </DialogHeader>
 
         <ul className="mt-5 space-y-2 text-left">
-          {SUPPORT_ME_LINKS.map((link) => {
+          {SUPPORT_ME_LINKS.map((link, index) => {
             const Icon = link.icon;
             return (
-              <li key={link.id}>
+              <motion.li
+                key={link.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeOut",
+                  delay: 0.15 + index * 0.05,
+                }}
+              >
                 <a
                   href={link.href}
                   target="_blank"
@@ -93,7 +113,7 @@ export default function SupportMeModal() {
                     ↗
                   </span>
                 </a>
-              </li>
+              </motion.li>
             );
           })}
         </ul>
@@ -115,6 +135,7 @@ export default function SupportMeModal() {
             Continue editing
           </Button>
         </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );

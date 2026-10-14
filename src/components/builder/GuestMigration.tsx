@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useAppSelector } from "@/lib/hooks";
+import { selectAuthUser } from "@/lib/features/authSlice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,8 +17,7 @@ import { toast } from "sonner";
 import { Upload, Trash2, CheckCircle, AlertCircle, FileText } from "lucide-react";
 
 export default function GuestMigration() {
-  const { data: session } = useSession();
-  const user = session?.user;
+  const user = useAppSelector(selectAuthUser);
   const [guestCvs, setGuestCvs] = useState<CvListItem[]>(() => {
     if (typeof window !== "undefined") {
       return getGuestCvs();

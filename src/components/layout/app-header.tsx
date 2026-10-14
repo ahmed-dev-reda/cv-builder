@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -15,12 +16,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AppHeader() {
-  const { data: session } = useSession();
+  const user = useAppSelector(selectAuthUser);
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: "/" });
+    await dispatch(signOutUser());
+    router.push("/");
   };
 
   return (
@@ -58,7 +61,7 @@ export default function AppHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {session?.user ? (
+          {user ? (
             <>
               <Link href="/builder">
                 <Button size="sm">Build CV</Button>
@@ -68,18 +71,18 @@ export default function AppHeader() {
                   <button className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-gray-100 cursor-pointer">
                     <Avatar
                       fallback={
-                        session.user.name?.charAt(0).toUpperCase() || "?"
+                        user.name?.charAt(0).toUpperCase() || "?"
                       }
                     />
                     <span className="text-sm font-medium">
-                      {session.user.name}
+                      {user.name}
                     </span>
                   </button>
                 }
               >
                 <div className="px-2 py-1.5">
-                  <p className="text-sm font-medium">{session.user.name}</p>
-                  <p className="text-xs text-muted">{session.user.email}</p>
+                  <p className="text-sm font-medium">{user.name}</p>
+                  <p className="text-xs text-muted">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push("/dashboard")}>
@@ -147,7 +150,7 @@ export default function AppHeader() {
               Templates
             </a>
             <div className="border-t border-border pt-3 mt-2">
-              {session?.user ? (
+              {user ? (
                 <div className="flex flex-col gap-2">
                   <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" size="sm" className="w-full">

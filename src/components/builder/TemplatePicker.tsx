@@ -4,6 +4,7 @@ import * as React from "react";
 import Image, { StaticImageData } from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { Check } from "lucide-react";
+import { motion } from "motion/react";
 import { AppDispatch, RootState } from "@/lib/store";
 import { setTemplate, TemplateType } from "@/lib/features/resumeSlice";
 import { cn } from "@/lib/utils";
@@ -44,24 +45,38 @@ export default function TemplatePicker() {
 
       <div className="flex-1 overflow-y-auto p-3">
         <div className="grid grid-cols-2 gap-2">
-          {templates.map((tmpl) => {
+          {templates.map((tmpl, index) => {
             const isActive = current === tmpl.id;
 
             return (
-              <button
+              <motion.button
                 key={tmpl.id}
                 onClick={() => dispatch(setTemplate(tmpl.id))}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.25,
+                  ease: "easeOut",
+                  delay: Math.min(index * 0.04, 0.24),
+                }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 className={cn(
-                  "group relative flex flex-col items-center rounded-lg border-2 p-2 transition-all cursor-pointer",
+                  "group relative flex flex-col items-center rounded-lg border-2 p-2 transition-colors cursor-pointer",
                   isActive
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/40 hover:bg-gray-50",
                 )}
               >
                 {isActive && (
-                  <div className="absolute right-1.5 top-1.5 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    className="absolute right-1.5 top-1.5 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-primary"
+                  >
                     <Check className="h-2.5 w-2.5 text-white" />
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Template preview thumbnail */}
@@ -84,7 +99,7 @@ export default function TemplatePicker() {
                   {tmpl.name}
                 </span>
                 <span className="text-[9px] text-muted">{tmpl.description}</span>
-              </button>
+              </motion.button>
             );
           })}
         </div>

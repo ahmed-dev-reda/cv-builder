@@ -39,13 +39,6 @@ export default async function DashboardPage() {
   }
 
   return (
-    <DashboardClient
-      user={{
-        name: session.user.name ?? null,
-        email: session.user.email ?? null,
-      }}
-      initialCvs={initialCvs}
-      loadError={loadError}
-    />
+    <DashboardClient initialCvs={initialCvs} loadError={loadError} />
   );
 }

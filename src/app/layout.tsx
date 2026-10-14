@@ -3,6 +3,7 @@ import { Open_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import MotionProvider from "@/components/motion-provider";
 import { Toaster } from "sonner";
 import favicon from "./favicon.png";
 
@@ -61,7 +62,7 @@ export default function RootLayout({
       <body className="flex flex-col">
         <StoreProvider>
           <AuthProvider>
-            {children}
+            <MotionProvider>{children}</MotionProvider>
             <Toaster position="top-center" richColors />
           </AuthProvider>
         </StoreProvider>

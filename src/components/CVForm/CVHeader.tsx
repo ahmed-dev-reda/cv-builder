@@ -1,17 +1,5 @@
-import {
-  inter,
-  roboto,
-  openSans,
-  lato,
-  montserrat,
-  poppins,
-  merriweather,
-  playfairDisplay,
-  oswald,
-  nunito,
-} from "@/lib/fonts";
-
 import { setColor, setFont } from "@/lib/features/resumeSlice";
+import { fontMap } from "@/data/data";
 import { RootState } from "@/lib/store";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,52 +8,29 @@ import { FaChevronDown } from "react-icons/fa";
 import { VscSettingsCompact } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 
-const fonts = [
-  {
-    name: "Inter",
-    className: inter.className,
-  },
-  {
-    name: "Roboto",
-    className: roboto.className,
-  },
-  {
-    name: "Times New Roman",
-    className: "font-times-new-roman",
-  },
-  {
-    name: "Open Sans",
-    className: openSans.className,
-  },
-  {
-    name: "Lato",
-    className: lato.className,
-  },
-  {
-    name: "Montserrat",
-    className: montserrat.className,
-  },
-  {
-    name: "Poppins",
-    className: poppins.className,
-  },
-  {
-    name: "Merriweather",
-    className: merriweather.className,
-  },
-  {
-    name: "Playfair Display",
-    className: playfairDisplay.className,
-  },
-  {
-    name: "Oswald",
-    className: oswald.className,
-  },
-  {
-    name: "Nunito",
-    className: nunito.className,
-  },
+// Single source of truth for picker order; entries (className/label)
+// come from the shared fontMap so the picker can never drift from it.
+// The opaque next/font className is still what gets stored in Redux —
+// resolvePdfFont() maps it back for PDF export.
+const FONT_ORDER = [
+  "inter",
+  "roboto",
+  "times-new-roman",
+  "open-sans",
+  "lato",
+  "montserrat",
+  "poppins",
+  "merriweather",
+  "playfair-display",
+  "oswald",
+  "nunito",
 ];
+
+const fonts = FONT_ORDER.map((key) => ({
+  key,
+  name: fontMap[key]?.label ?? key,
+  className: fontMap[key]?.className ?? "",
+}));
 
 export default function Progress({
   percentage,

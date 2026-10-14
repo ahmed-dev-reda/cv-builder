@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,25 +31,25 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
 import type { CvListItem } from "@/lib/persistence";
 import { toast } from "sonner";
 
 interface DashboardClientProps {
-  user: {
-    name: string | null;
-    email: string | null;
-  };
   initialCvs: CvListItem[];
   loadError: string | null;
 }
 
 export default function DashboardClient({
-  user,
   initialCvs,
   loadError,
 }: DashboardClientProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  // Single source of truth for the signed-in user (synced from the
+  // NextAuth session by AuthSync; server page no longer passes it).
+  const user = useAppSelector(selectAuthUser);
   const [cvs, setCvs] = useState<CvListItem[]>(initialCvs);
   const [loading, setLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -119,8 +120,19 @@ export default function DashboardClient({
   };
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: "/" });
+    await dispatch(signOutUser());
+    router.push("/");
   };
+
+  // The server guarantees a session; this covers the tick before AuthSync
+  // populates Redux after session restore.
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -176,10 +188,15 @@ export default function DashboardClient({
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="mb-8"
+        >
           <h1 className="text-3xl font-bold tracking-tight">My CVs</h1>
           <p className="mt-2 text-muted">Manage and edit your saved CVs</p>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -188,6 +205,11 @@ export default function DashboardClient({
             ))}
           </div>
         ) : cvs.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-50">
@@ -206,11 +228,24 @@ export default function DashboardClient({
               </Link>
             </CardContent>
           </Card>
+          </motion.div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cvs.map((cv) => (
-              <Card
+          <motion.div layout className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+            {cvs.map((cv, index) => (
+              <motion.div
                 key={cv.id}
+                layout
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{
+                  duration: 0.25,
+                  ease: "easeOut",
+                  delay: Math.min(index * 0.04, 0.3),
+                }}
+              >
+              <Card
                 className="group hover:shadow-md transition-shadow"
               >
                 <CardHeader className="pb-3">
@@ -270,8 +305,10 @@ export default function DashboardClient({
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
             ))}
-          </div>
+            </AnimatePresence>
+          </motion.div>
         )}
       </main>
 
