@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { validateResumeData } from "@/lib/validation";
-import BuilderClient, { type InitialCv } from "./BuilderClient";
+import BuilderClient from "./BuilderClient";
+import type { InitialCv } from "./useBuilderCv";
 
 export const metadata: Metadata = {
   title: "Builder",
