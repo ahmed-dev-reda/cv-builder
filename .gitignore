@@ -40,3 +40,6 @@ next-env.d.ts
 *.db-journal
 *.db-wal
 *.db-shm
+
+# prisma generated client
+src/generated/

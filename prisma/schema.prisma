@@ -1,0 +1,38 @@
+// Prisma 7 schema — mirrors the existing Neon PostgreSQL tables 1:1
+// (created originally by src/lib/db.ts initDb). Table/column names are
+// preserved via @@map/@map so no data migration is needed.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String   @default("")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  cvs          Cv[]
+
+  @@map("users")
+}
+
+model Cv {
+  id        String   @id
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @default("Untitled CV")
+  data      Json
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId], map: "idx_cvs_user_id")
+  @@map("cvs")
+}
