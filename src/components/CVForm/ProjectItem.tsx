@@ -87,85 +87,31 @@ export default function ProjectItem({
       </div>
 
       {/* URL + Dates */}
-      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div>
-          <label
-            className="text-sm font-semibold"
-            htmlFor={`projectUrl-${project.id}`}
-          >
-            Project URL
-          </label>
+      <div className="mt-4 g">
+        <label
+          className="text-sm font-semibold"
+          htmlFor={`projectUrl-${project.id}`}
+        >
+          Project URL
+        </label>
 
-          <input
-            type="url"
-            className={inputClasses}
-            id={`projectUrl-${project.id}`}
-            placeholder="https://example.com"
-            value={project.url ?? ""}
-            onChange={(e) =>
-              dispatch(
-                updateProject({
-                  id: project.id,
-                  data: {
-                    url: e.target.value,
-                  },
-                }),
-              )
-            }
-          />
-        </div>
-
-        <div>
-          <label
-            className="text-sm font-semibold"
-            htmlFor={`projectStartDate-${project.id}`}
-          >
-            Start Date
-          </label>
-
-          <input
-            type="text"
-            className={inputClasses}
-            id={`projectStartDate-${project.id}`}
-            value={project.startDate ?? ""}
-            onChange={(e) =>
-              dispatch(
-                updateProject({
-                  id: project.id,
-                  data: {
-                    startDate: e.target.value,
-                  },
-                }),
-              )
-            }
-          />
-        </div>
-
-        <div>
-          <label
-            className="text-sm font-semibold"
-            htmlFor={`projectEndDate-${project.id}`}
-          >
-            End Date
-          </label>
-
-          <input
-            type="text"
-            className={inputClasses}
-            id={`projectEndDate-${project.id}`}
-            value={project.endDate ?? ""}
-            onChange={(e) =>
-              dispatch(
-                updateProject({
-                  id: project.id,
-                  data: {
-                    endDate: e.target.value,
-                  },
-                }),
-              )
-            }
-          />
-        </div>
+        <input
+          type="url"
+          className={inputClasses}
+          id={`projectUrl-${project.id}`}
+          placeholder="https://example.com"
+          value={project.url ?? ""}
+          onChange={(e) =>
+            dispatch(
+              updateProject({
+                id: project.id,
+                data: {
+                  url: e.target.value,
+                },
+              }),
+            )
+          }
+        />
       </div>
 
       {/* Description */}

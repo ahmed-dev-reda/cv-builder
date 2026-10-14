@@ -13,7 +13,9 @@ import BuilderHeader from "@/components/builder/BuilderHeader";
 import DownloadSuccess from "@/components/builder/DownloadSuccess";
 import SupportMeModal from "@/components/builder/SupportMeModal";
 import AiAssistant from "@/components/builder/AiAssistant";
-import BuilderSidebar, { SidebarRoute } from "@/components/builder/BuilderSidebar";
+import BuilderSidebar, {
+  SidebarRoute,
+} from "@/components/builder/BuilderSidebar";
 import TemplatePicker from "@/components/builder/TemplatePicker";
 
 import Simple from "@/templates/Simple";
@@ -26,18 +28,7 @@ import ClassicFour from "@/templates/ClassicFour";
 
 import { RootState } from "@/lib/store";
 import { TemplateType, setResume } from "@/lib/features/resumeSlice";
-import {
-  inter,
-  lato,
-  merriweather,
-  montserrat,
-  nunito,
-  openSans,
-  oswald,
-  playfairDisplay,
-  poppins,
-  roboto,
-} from "@/lib/fonts";
+
 import { useSession } from "next-auth/react";
 import {
   saveGuestCv,
@@ -52,59 +43,7 @@ import { requestSupportMe } from "@/lib/features/supportMeSlice";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { validateResumeData } from "@/lib/validation";
-
-const fontMap: Record<
-  string,
-  {
-    className: string;
-    fontFamily: string;
-  }
-> = {
-  inter: {
-    className: inter.className,
-    fontFamily: inter.style.fontFamily,
-  },
-  roboto: {
-    className: roboto.className,
-    fontFamily: roboto.style.fontFamily,
-  },
-  "open-sans": {
-    className: openSans.className,
-    fontFamily: openSans.style.fontFamily,
-  },
-  lato: {
-    className: lato.className,
-    fontFamily: lato.style.fontFamily,
-  },
-  montserrat: {
-    className: montserrat.className,
-    fontFamily: montserrat.style.fontFamily,
-  },
-  poppins: {
-    className: poppins.className,
-    fontFamily: poppins.style.fontFamily,
-  },
-  merriweather: {
-    className: merriweather.className,
-    fontFamily: merriweather.style.fontFamily,
-  },
-  "playfair-display": {
-    className: playfairDisplay.className,
-    fontFamily: playfairDisplay.style.fontFamily,
-  },
-  oswald: {
-    className: oswald.className,
-    fontFamily: oswald.style.fontFamily,
-  },
-  nunito: {
-    className: nunito.className,
-    fontFamily: nunito.style.fontFamily,
-  },
-  "times-new-roman": {
-    className: "",
-    fontFamily: '"Times New Roman", serif',
-  },
-};
+import { fontMap } from "@/data/data";
 
 export default function Builder() {
   const resumeData = useSelector((state: RootState) => state.resume);
@@ -142,7 +81,9 @@ export default function Builder() {
   const [zoom, setZoom] = useState(1);
   const [showForm, setShowForm] = useState(true);
   const [, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">(
+    "saved",
+  );
   const [currentCvId, setCurrentCvId] = useState<string | null>(null);
   const [currentCvName, setCurrentCvName] = useState("My CV");
 

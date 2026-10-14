@@ -1,9 +1,16 @@
 import AppHeader from "@/components/layout/app-header";
-import { FeaturesSection, StepsSection, TemplatesSection, StatsSection } from "@/components/home";
+import {
+  FeaturesSection,
+  StepsSection,
+  TemplatesSection,
+  StatsSection,
+} from "@/components/home";
 import { Footer } from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import HydrationLoader from "@/components/HydrationLoader";
 import type { Metadata } from "next";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Free CV Builder - Create a Professional Resume",
@@ -25,7 +32,11 @@ const jsonLd = {
   operatingSystem: "Web",
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (session?.user?.id) {
+    redirect("/dashboard");
+  }
   return (
     <HydrationLoader>
       <main className="min-h-screen bg-background text-foreground overflow-auto">
