@@ -9,8 +9,8 @@ const PROTECTED_PREFIXES = ["/dashboard", "/settings"];
  *
  * This is a UX guard only: every API route still validates the session
  * server-side with `auth()`. We decode the Auth.js session cookie directly
- * here (instead of importing `@/auth`) so the proxy never loads the SQLite
- * native module.
+ * here (instead of importing `@/auth`) so the proxy stays lightweight and
+ * never pulls server-only database code into the middleware runtime.
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
