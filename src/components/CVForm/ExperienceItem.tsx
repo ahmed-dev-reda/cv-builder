@@ -75,6 +75,33 @@ export default function ExperienceJSX({
         <div>
           <label
             className="text-sm font-semibold"
+            htmlFor={`location-${exp.id}`}
+          >
+            Location
+          </label>
+
+          <input
+            type="text"
+            className={inputClasses}
+            id={`location-${exp.id}`}
+            value={exp.location ?? ""}
+            onChange={(e) =>
+              dispatch(
+                updateExperience({
+                  id: exp.id,
+                  field: "location",
+                  value: e.target.value,
+                }),
+              )
+            }
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-4 my-2">
+        <div>
+          <label
+            className="text-sm font-semibold"
             htmlFor={`startDate-${exp.id}`}
           >
             Start Date

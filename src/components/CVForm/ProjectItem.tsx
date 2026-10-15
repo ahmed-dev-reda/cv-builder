@@ -114,6 +114,61 @@ export default function ProjectItem({
         />
       </div>
 
+      {/* Start + End Dates */}
+      <div className="mt-4 flex gap-4">
+        <div>
+          <label
+            className="text-sm font-semibold"
+            htmlFor={`projectStartDate-${project.id}`}
+          >
+            Start Date
+          </label>
+
+          <input
+            type="text"
+            className={inputClasses}
+            id={`projectStartDate-${project.id}`}
+            value={project.startDate ?? ""}
+            onChange={(e) =>
+              dispatch(
+                updateProject({
+                  id: project.id,
+                  data: {
+                    startDate: e.target.value,
+                  },
+                }),
+              )
+            }
+          />
+        </div>
+
+        <div>
+          <label
+            className="text-sm font-semibold"
+            htmlFor={`projectEndDate-${project.id}`}
+          >
+            End Date
+          </label>
+
+          <input
+            type="text"
+            className={inputClasses}
+            id={`projectEndDate-${project.id}`}
+            value={project.endDate ?? ""}
+            onChange={(e) =>
+              dispatch(
+                updateProject({
+                  id: project.id,
+                  data: {
+                    endDate: e.target.value,
+                  },
+                }),
+              )
+            }
+          />
+        </div>
+      </div>
+
       {/* Description */}
       <div className="mt-5">
         <label

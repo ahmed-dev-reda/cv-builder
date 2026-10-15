@@ -76,6 +76,23 @@ export default function EducationJSX({
         />
       </div>
 
+      {/* Location */}
+      <div className="flex-1 basis-72 my-2">
+        <label className="text-sm font-semibold" htmlFor={`education-location-${edu.id}`}>
+          Location
+        </label>
+        <input
+          type="text"
+          name="location"
+          id={`education-location-${edu.id}`}
+          className={inputClasses}
+          value={edu.location ?? ""}
+          onChange={(e) => {
+            dispatch(updateEducation({ id: edu.id, field: "location", value: e.target.value }));
+          }}
+        />
+      </div>
+
       <div className="flex gap-4 my-2">
         {/* Start Date */}
         <div className="flex-1">

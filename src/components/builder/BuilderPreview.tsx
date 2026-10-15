@@ -12,6 +12,11 @@ import ClassicTwo from "@/templates/ClassicTwo";
 import MinimalistTwo from "@/templates/MinimalistTwo";
 import ClassicThree from "@/templates/ClassicThree";
 import ClassicFour from "@/templates/ClassicFour";
+import SoftwareEngineeringLead from "@/templates/SoftwareEngineeringLead";
+import ExperiencedHireV6 from "@/templates/ExperiencedHireV6";
+import RecentGraduateV3 from "@/templates/RecentGraduateV3";
+import RecentGraduateV4 from "@/templates/RecentGraduateV4";
+import TechnicalProgramManager from "@/templates/TechnicalProgramManager";
 
 import type { TemplateType } from "@/lib/features/resumeSlice";
 
@@ -23,6 +28,11 @@ const templates: Record<TemplateType, ComponentType> = {
   minimalistTwo: MinimalistTwo,
   classicThree: ClassicThree,
   classicFour: ClassicFour,
+  softwareEngineeringLead: SoftwareEngineeringLead,
+  experiencedHireV6: ExperiencedHireV6,
+  recentGraduateV3: RecentGraduateV3,
+  recentGraduateV4: RecentGraduateV4,
+  technicalProgramManager: TechnicalProgramManager,
 };
 
 interface BuilderPreviewProps {

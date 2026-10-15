@@ -6,6 +6,7 @@ export interface Education {
   id: string;
   degree: string;
   institution: string;
+  location?: string;
   startDate: string;
   endDate: string;
   points: string[];
@@ -16,6 +17,7 @@ export interface Experience {
   id: string;
   jobTitle: string;
   company: string;
+  location?: string;
   startDate: string;
   endDate: string;
   points: string[];
@@ -85,7 +87,12 @@ export type TemplateType =
   | "classicTwo"
   | "minimalistTwo"
   | "classicThree"
-  | "classicFour";
+  | "classicFour"
+  | "softwareEngineeringLead"
+  | "experiencedHireV6"
+  | "recentGraduateV3"
+  | "recentGraduateV4"
+  | "technicalProgramManager";
 
 // --- Initial state ---
 

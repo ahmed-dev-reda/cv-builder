@@ -26,6 +26,7 @@ export const ExperienceSchema: z.ZodType<Experience> = z.object({
   id: z.string(),
   jobTitle: z.string(),
   company: z.string(),
+  location: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
   points: z.array(z.string()),
@@ -35,6 +36,7 @@ export const EducationSchema: z.ZodType<Education> = z.object({
   id: z.string(),
   degree: z.string(),
   institution: z.string(),
+  location: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
   points: z.array(z.string()),
@@ -93,6 +95,11 @@ export const TemplateSchema = z.enum([
   "minimalistTwo",
   "classicThree",
   "classicFour",
+  "softwareEngineeringLead",
+  "experiencedHireV6",
+  "recentGraduateV3",
+  "recentGraduateV4",
+  "technicalProgramManager",
 ]);
 
 export const ResumeStateSchema: z.ZodType<ResumeState> = z.object({
