@@ -86,7 +86,7 @@ export default function BuilderPanel({
           xl:max-w-105
           xl:border-b-0
           xl:border-r
-          ${showForm ? "flex h-[55dvh]" : "hidden xl:flex"}
+          ${showForm ? "flex h-[55dvh]" : "hidden xl:flex"} resize-x
         `}
       >
         {/* Panel Header */}

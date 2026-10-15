@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BiCheck } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
+import { Reveal } from "@/components/ui/reveal";
 
 export default function Hero() {
   return (
@@ -12,49 +13,65 @@ export default function Hero() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pb-28 lg:pt-24">
         {/* Hero content */}
         <div>
-          <h1 className="text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-            Create a CV that{" "}
-            <span className="text-primary">gets noticed.</span>
-          </h1>
+          <Reveal>
+            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+              Create a CV that{" "}
+              <span className="text-primary">gets noticed.</span>
+            </h1>
+          </Reveal>
 
-          <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
-            Create a professional CV in minutes with an easy-to-use builder,
-            beautiful templates, real-time preview and high-quality PDF export.
-          </p>
+          <Reveal delay={0.1}>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
+              Create a professional CV in minutes with an easy-to-use builder,
+              beautiful templates, real-time preview and high-quality PDF
+              export.
+            </p>
+          </Reveal>
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link href="/builder">
-              <Button size="lg" className="gap-2">
-                Create your CV
-                <BsArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/signin">
-              <Button size="lg" variant="outline">
-                Sign in
-              </Button>
-            </Link>
-          </div>
+          <Reveal delay={0.2}>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link href="/builder">
+                <Button size="lg" className="gap-2">
+                  Create your CV
+                  <BsArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/signin">
+                <Button size="lg" variant="outline">
+                  Sign in
+                </Button>
+              </Link>
+            </div>
+          </Reveal>
 
-          <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3">
-            {[
-              "No design skills required",
-              "Real-time preview",
-              "PDF export",
-              "AI-powered writing",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-sm text-muted">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-50 text-primary">
-                  <BiCheck className="h-3 w-3" strokeWidth={3} />
-                </span>
-                {item}
-              </div>
-            ))}
-          </div>
+          <Reveal delay={0.3}>
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+              {[
+                "No design skills required",
+                "Real-time preview",
+                "PDF export",
+                "AI-powered writing",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 text-sm text-muted"
+                >
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-50 text-primary">
+                    <BiCheck className="h-3 w-3" strokeWidth={3} />
+                  </span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
 
         {/* CV Preview Mockup */}
-        <div className="relative mx-auto w-full max-w-lg">
+        <Reveal
+          delay={0.25}
+          distance={40}
+          className="relative mx-auto w-full max-w-lg"
+        >
           <div className="relative rotate-1 rounded-2xl border border-border bg-surface p-3 shadow-2xl shadow-primary/5">
             <div className="rounded-xl border border-gray-100 bg-white p-6 sm:p-8">
               {/* CV header */}
@@ -120,7 +137,7 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BsArrowRight } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 
 const steps = [
   {
@@ -32,7 +33,7 @@ export function StepsSection() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <div>
+          <Reveal>
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               How it works
             </span>
@@ -49,24 +50,23 @@ export function StepsSection() {
                 <BsArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-          </div>
+          </Reveal>
 
           <div className="space-y-4">
-            {steps.map((step) => (
-              <div
-                key={step.number}
-                className="flex gap-5 rounded-xl border border-border bg-background p-6"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white">
-                  {step.number}
+            {steps.map((step, index) => (
+              <Reveal key={step.number} delay={index * 0.12}>
+                <div className="flex gap-5 rounded-xl border border-border bg-background p-6">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white">
+                    {step.number}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{step.title}</h3>
+                    <p className="mt-1.5 text-sm leading-6 text-muted">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold">{step.title}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-muted">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>

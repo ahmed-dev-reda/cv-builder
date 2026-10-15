@@ -2,29 +2,19 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
+import { useAppSelector } from "@/lib/hooks";
+import { selectAuthUser } from "@/lib/features/authSlice";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, LayoutDashboard, Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+
+import { LayoutDashboard, Menu, X } from "lucide-react";
+
 import { useState } from "react";
+import UserAvatar from "./user-avatar";
 
 export default function AppHeader() {
   const user = useAppSelector(selectAuthUser);
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    await dispatch(signOutUser());
-    router.push("/");
-  };
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-surface/85 backdrop-blur-xl">
@@ -66,36 +56,7 @@ export default function AppHeader() {
               <Link href="/builder">
                 <Button size="sm">Build CV</Button>
               </Link>
-              <DropdownMenu
-                trigger={
-                  <button className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-gray-100 cursor-pointer">
-                    <Avatar
-                      fallback={
-                        user.name?.charAt(0).toUpperCase() || "?"
-                      }
-                    />
-                    <span className="text-sm font-medium">
-                      {user.name}
-                    </span>
-                  </button>
-                }
-              >
-                <div className="px-2 py-1.5">
-                  <p className="text-sm font-medium">{user.name}</p>
-                  <p className="text-xs text-muted">{user.email}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenu>
+              <UserAvatar />
             </>
           ) : (
             <>
@@ -163,10 +124,6 @@ export default function AppHeader() {
                       Build CV
                     </Button>
                   </Link>
-                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                    <LogOut className="h-4 w-4" />
-                    Sign out
-                  </Button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
