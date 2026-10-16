@@ -35,6 +35,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectAuthUser, signOutUser } from "@/lib/features/authSlice";
 import GuestMigration from "@/components/builder/GuestMigration";
 import type { CvListItem } from "@/lib/persistence";
+import { MAX_CVS_PER_USER } from "@/lib/validation";
 import { toast } from "sonner";
 
 interface DashboardClientProps {
@@ -94,7 +95,20 @@ export default function DashboardClient({
     setDeleteId(null);
   };
 
+  const atLimit = cvs.length >= MAX_CVS_PER_USER;
+
+  const handleNewCvClick = (e: React.MouseEvent) => {
+    if (atLimit) {
+      e.preventDefault();
+      toast.error(`CV limit reached (max ${MAX_CVS_PER_USER} per account). Delete a CV to create a new one.`);
+    }
+  };
+
   const handleDuplicate = async (cv: CvListItem) => {
+    if (atLimit) {
+      toast.error(`CV limit reached (max ${MAX_CVS_PER_USER} per account). Delete a CV to duplicate.`);
+      return;
+    }
     try {
       const res = await fetch(`/api/cvs/${cv.id}`);
       if (!res.ok) throw new Error("Failed to fetch CV");
@@ -113,7 +127,8 @@ export default function DashboardClient({
         toast.success("CV duplicated successfully");
         refreshCvs();
       } else {
-        toast.error("Failed to duplicate CV");
+        const err = await createRes.json().catch(() => ({}));
+        toast.error(typeof err.error === "string" ? err.error : "Failed to duplicate CV");
       }
     } catch {
       toast.error("Failed to duplicate CV");
@@ -150,8 +165,8 @@ export default function DashboardClient({
           </Link>
 
           <div className="flex items-center gap-3">
-            <Link href="/builder">
-              <Button size="sm">
+            <Link href="/builder" onClick={handleNewCvClick} aria-disabled={atLimit}>
+              <Button size="sm" disabled={atLimit}>
                 <Plus className="h-4 w-4" />
                 New CV
               </Button>
@@ -197,7 +212,9 @@ export default function DashboardClient({
           className="mb-8"
         >
           <h1 className="text-3xl font-bold tracking-tight">My CVs</h1>
-          <p className="mt-2 text-muted">Manage and edit your saved CVs</p>
+          <p className="mt-2 text-muted">
+            Manage and edit your saved CVs ({cvs.length}/{MAX_CVS_PER_USER} used)
+          </p>
         </motion.div>
 
         {loading ? (
@@ -222,8 +239,8 @@ export default function DashboardClient({
                 Create your first CV and it will appear here. You can also
                 import CVs from guest mode.
               </p>
-              <Link href="/builder" className="mt-6">
-                <Button>
+              <Link href="/builder" onClick={handleNewCvClick} className="mt-6" aria-disabled={atLimit}>
+                <Button disabled={atLimit}>
                   <Plus className="h-4 w-4" />
                   Create your first CV
                 </Button>

@@ -69,6 +69,8 @@ export function useBuilderCv({
   // Ensures the server-preloaded CV hydrates Redux exactly once per mount.
   // (The server page remounts the client via `key` when `cvId` changes.)
   const serverHydratedRef = useRef(false);
+  // Shows the CV-limit toast only once per mount to avoid spamming on autosave.
+  const limitToastShownRef = useRef(false);
 
   const saveCurrentCv = useCallback(async () => {
     if (loadingCvRef.current) return;
@@ -122,6 +124,11 @@ export function useBuilderCv({
     } catch (error) {
       console.error("Save failed:", error);
       setSaveStatus("error");
+      const message = error instanceof Error ? error.message : "";
+      if (message.toLowerCase().includes("limit") && !limitToastShownRef.current) {
+        limitToastShownRef.current = true;
+        toast.error(message);
+      }
     } finally {
       setSaving(false);
     }

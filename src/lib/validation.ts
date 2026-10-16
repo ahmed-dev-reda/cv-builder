@@ -95,11 +95,6 @@ export const TemplateSchema = z.enum([
   "minimalistTwo",
   "classicThree",
   "classicFour",
-  "softwareEngineeringLead",
-  "experiencedHireV6",
-  "recentGraduateV3",
-  "recentGraduateV4",
-  "technicalProgramManager",
 ]);
 
 export const ResumeStateSchema: z.ZodType<ResumeState> = z.object({
@@ -130,6 +125,8 @@ export const SignInSchema = z.object({
 });
 
 // --- CV API schemas ---
+export const MAX_CVS_PER_USER = 2;
+
 export const SaveCvSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "CV name is required").max(200),

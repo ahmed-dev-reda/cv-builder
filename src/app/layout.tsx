@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nowcv.com"),
 
   title: {
-    default: "Now CV - Free Online CV & Resume Builder",
-    template: "%s | Now CV",
+    default: "MY ATS CV - Free Online CV & Resume Builder",
+    template: "%s | MY ATS CV",
   },
 
   description:
-    "Create a professional CV and resume online with Now CV. Choose from modern templates, customize your resume, and download your CV as a PDF.",
+    "Create a professional CV and resume online with MY ATS CV. Choose from modern templates, customize your resume, and download your CV as a PDF.",
 
   icons: {
     icon: favicon.src,

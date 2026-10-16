@@ -63,6 +63,39 @@ export function buildPdfDocument({ css, bodyHtml, font }: PdfDocumentInput): str
               box-sizing: border-box;
             }
 
+            /* Multi-page export: one sheet per A4 page, no preview gap or
+             * shadow. Sheet windows are fixed 794x1123 so Chromium paginates
+             * exactly at sheet boundaries, matching the on-screen preview.
+             * Transforms are preserved — each sheet shows its own slice. */
+            .cv-pages {
+              display: block !important;
+              gap: 0 !important;
+            }
+
+            .cv-sheet {
+              width: 794px !important;
+              height: 1123px !important;
+              overflow: hidden !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+              page-break-after: always !important;
+              break-after: page !important;
+            }
+
+            .cv-sheet:last-child {
+              page-break-after: auto !important;
+              break-after: auto !important;
+            }
+
+            .cv-window {
+              width: 794px !important;
+              overflow: hidden !important;
+            }
+
+            .cv-flow {
+              width: 794px !important;
+            }
+
             .cv-font,
             .cv-font * {
               font-family: ${font.stack} !important;

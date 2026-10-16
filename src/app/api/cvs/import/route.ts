@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
-import { validateResumeData } from "@/lib/validation";
+import { validateResumeData, MAX_CVS_PER_USER } from "@/lib/validation";
 import { v4 as uuidv4 } from "uuid";
 
 export const runtime = "nodejs";
@@ -33,9 +33,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const existingCount = await prisma.cv.count({
+      where: { userId: session.user.id },
+    });
+    let importedCount = existingCount;
+
     const results: Array<{ name: string; success: boolean; id?: string; error?: string }> = [];
 
     for (const cv of cvs) {
+      if (importedCount >= MAX_CVS_PER_USER) {
+        results.push({
+          name: cv.name || "Untitled",
+          success: false,
+          error: `CV limit reached (max ${MAX_CVS_PER_USER} per account)`,
+        });
+        continue;
+      }
       try {
         const validation = validateResumeData(cv.data);
         if (!validation.valid || !validation.data) {
@@ -57,6 +70,7 @@ export async function POST(request: NextRequest) {
         });
 
         results.push({ name: cv.name || "Imported CV", success: true, id });
+        importedCount += 1;
       } catch (err) {
         results.push({
           name: cv.name || "Untitled",

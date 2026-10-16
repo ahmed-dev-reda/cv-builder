@@ -87,3 +87,34 @@ body {
 .font-times-new-roman {
   font-family: "Times New Roman", Times, serif;
 }
+
+/* Paginated CV preview: each sheet is one A4 page (794x1123px at 96dpi).
+ * Sheets are stacked vertically with a visual gap; the PDF export CSS
+ * (see buildPdfDocument) collapses the gap and forces one sheet per page. */
+.cv-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
+}
+
+.cv-sheet {
+  width: 794px;
+  height: 1123px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* Exact content slice window: fixed slice height (+16px top pad on
+ * continuation pages), clipping the translated flow to its page. */
+.cv-window {
+  width: 794px;
+  overflow: hidden;
+}
+
+.cv-flow {
+  width: 794px;
+  will-change: transform;
+}

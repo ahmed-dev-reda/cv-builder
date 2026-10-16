@@ -87,12 +87,7 @@ export type TemplateType =
   | "classicTwo"
   | "minimalistTwo"
   | "classicThree"
-  | "classicFour"
-  | "softwareEngineeringLead"
-  | "experiencedHireV6"
-  | "recentGraduateV3"
-  | "recentGraduateV4"
-  | "technicalProgramManager";
+  | "classicFour";
 
 // --- Initial state ---
 

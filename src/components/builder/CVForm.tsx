@@ -6,9 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import { FaPlus } from "react-icons/fa";
 import { motion } from "motion/react";
 
-import { addMoreSection, setSectionOrder } from "@/lib/features/resumeSlice";
+import { addMoreSection, setResume, setSectionOrder } from "@/lib/features/resumeSlice";
 import { RootState } from "@/lib/store";
 import { useAppDispatch } from "@/lib/hooks";
+import { sampleResume } from "@/data/sampleResume";
+import { toast } from "sonner";
 
 import Progress from "../CVForm/CVHeader";
 import PersonalInfo from "../CVForm/PersonalInfo";
@@ -194,9 +196,31 @@ export default function CVForm() {
   // Render
   // --------------------------------
 
+  const handleFillSample = () => {
+    dispatch(
+      setResume({
+        ...sampleResume,
+        template: state.template,
+        color: state.color,
+        font: state.font,
+      }),
+    );
+    toast.success("Sample data loaded — switch templates to preview");
+  };
+
   return (
     <>
       <Progress percentage={percentage} color={color} />
+
+      <div className="px-4 pt-3">
+        <button
+          type="button"
+          onClick={handleFillSample}
+          className="w-full cursor-pointer rounded-md border-2 border-dashed border-primary-200 p-2 text-sm font-semibold text-primary transition hover:bg-primary-50"
+        >
+          ✨ Fill with sample data
+        </button>
+      </div>
 
       <motion.form
         initial={{ x: -300 }}

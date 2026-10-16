@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
-import { SaveCvSchema, validateResumeData } from "@/lib/validation";
+import { SaveCvSchema, validateResumeData, MAX_CVS_PER_USER } from "@/lib/validation";
 import { v4 as uuidv4 } from "uuid";
 
 export const runtime = "nodejs";
@@ -92,7 +92,16 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ id, success: true });
     } else {
-      // Create new CV
+      // Create new CV — enforce per-account limit
+      const existingCount = await prisma.cv.count({
+        where: { userId: session.user.id },
+      });
+      if (existingCount >= MAX_CVS_PER_USER) {
+        return NextResponse.json(
+          { error: `CV limit reached (max ${MAX_CVS_PER_USER} per account). Delete a CV to create a new one.` },
+          { status: 403 },
+        );
+      }
       const newId = uuidv4();
       await prisma.cv.create({
         data: {

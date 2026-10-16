@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { type ComponentType, type RefObject } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
@@ -12,11 +13,11 @@ import ClassicTwo from "@/templates/ClassicTwo";
 import MinimalistTwo from "@/templates/MinimalistTwo";
 import ClassicThree from "@/templates/ClassicThree";
 import ClassicFour from "@/templates/ClassicFour";
-import SoftwareEngineeringLead from "@/templates/SoftwareEngineeringLead";
-import ExperiencedHireV6 from "@/templates/ExperiencedHireV6";
-import RecentGraduateV3 from "@/templates/RecentGraduateV3";
-import RecentGraduateV4 from "@/templates/RecentGraduateV4";
-import TechnicalProgramManager from "@/templates/TechnicalProgramManager";
+
+import PaginatedPreview, {
+  CV_PAGE_GAP,
+  CV_PAGE_HEIGHT,
+} from "@/components/builder/PaginatedPreview";
 
 import type { TemplateType } from "@/lib/features/resumeSlice";
 
@@ -28,11 +29,7 @@ const templates: Record<TemplateType, ComponentType> = {
   minimalistTwo: MinimalistTwo,
   classicThree: ClassicThree,
   classicFour: ClassicFour,
-  softwareEngineeringLead: SoftwareEngineeringLead,
-  experiencedHireV6: ExperiencedHireV6,
-  recentGraduateV3: RecentGraduateV3,
-  recentGraduateV4: RecentGraduateV4,
-  technicalProgramManager: TechnicalProgramManager,
+
 };
 
 interface BuilderPreviewProps {
@@ -43,8 +40,9 @@ interface BuilderPreviewProps {
 }
 
 /**
- * Right preview column: zoomable live CV preview. The toolbar lives in
- * BuilderClient so the header spans the full builder width.
+ * Right preview column: zoomable live CV preview with automatic A4
+ * pagination. The toolbar lives in BuilderClient so the header spans the
+ * full builder width.
  */
 export default function BuilderPreview({
   previewRef,
@@ -53,8 +51,11 @@ export default function BuilderPreview({
   onDismissDownloaded,
 }: BuilderPreviewProps) {
   const resumeData = useSelector((state: RootState) => state.resume);
+  const [pageCount, setPageCount] = React.useState(1);
 
-  const Template = templates[resumeData.template];
+  const Template = templates[resumeData.template] ?? Simple;
+  const totalHeight =
+    pageCount * CV_PAGE_HEIGHT + (pageCount - 1) * CV_PAGE_GAP;
 
   return (
     <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
@@ -70,22 +71,15 @@ export default function BuilderPreview({
             className="origin-top"
             style={{
               transform: `scale(${zoom})`,
-              marginBottom: `${(zoom - 1) * 1123}px`,
+              marginBottom: `${(zoom - 1) * totalHeight}px`,
             }}
           >
-            <div
-              ref={previewRef}
-              className={`
-                h-280.75
-                w-198.5
-                shrink-0
-                bg-white
-                shadow-[0_8px_35px_rgba(0,0,0,0.12)]
-                ${resumeData.font}
-              `}
-            >
-              <Template />
-            </div>
+            <PaginatedPreview
+              Template={Template}
+              containerRef={previewRef}
+              zoom={zoom}
+              onPageCountChange={setPageCount}
+            />
           </div>
         </div>
       </div>
